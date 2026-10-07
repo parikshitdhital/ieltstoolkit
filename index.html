@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IELTS Skill Gym</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1b1f2a;--mu:#667;--ac:#4f46e5;--ok:#16a34a;--no:#dc2626;--bd:#e3e5ee;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141c;--card:#1d2030;--tx:#eef0f8;--mu:#9aa0b8;--bd:#2c3046;--ac:#8b85ff}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+#app{max-width:560px;margin:0 auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin:10px 0}
+.stats{display:flex;gap:8px}.stats div{flex:1;text-align:center;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:8px}
+.stats b{display:block;font-size:20px}.stats span{font-size:12px;color:var(--mu)}
+button{font:inherit;color:inherit;cursor:pointer}
+.mode{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin:8px 0}
+.mode b{font-size:17px}.mode small{display:block;color:var(--mu)}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--bd);border-radius:12px;padding:12px;margin:8px 0}
+.opt.ok{border-color:var(--ok);background:rgba(22,163,74,.15)}.opt.no{border-color:var(--no);background:rgba(220,38,38,.13)}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:12px;padding:12px 16px;width:100%;font-weight:600;margin-top:8px}
+.ghost{background:none;color:var(--ac);border:1px solid var(--ac)}
+.ctx{font-size:15px;color:var(--mu);border-left:3px solid var(--ac);padding-left:10px}
+.bar{height:6px;background:var(--bd);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+.tag{display:inline-block;background:rgba(220,38,38,.15);color:var(--no);border-radius:8px;padding:2px 8px;font-size:12px;margin:2px}
+.np{background:rgba(79,70,229,.12);border-radius:10px;padding:10px;margin-top:8px}
+h2{margin:6px 0}.mu{color:var(--mu);font-size:14px}.row{display:flex;justify-content:space-between;align-items:center}
+</style></head><body><div id="app"></div>
+<script>
+const $=s=>document.querySelector(s),A=$('#app');
+let S=null;try{S=JSON.parse(localStorage.getItem('isg'))}catch(e){}
+S=S||{xp:0,streak:0,last:'',acc:{},miss:{}};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const PT="Info Hunter passage";
+const INFO=`<p class=ctx><b>A</b> In 2010, a group in Detroit turned empty lots into vegetable gardens. Within five years, over 1,400 such gardens were feeding local families.<br><b>B</b> Gardens also bring neighbours together. Residents who once never spoke now share tools and recipes.<br><b>C</b> Yet there are problems. Soil in old industrial areas can contain lead, so it must be tested before anything is planted.<br><b>D</b> Experts suggest that cities should offer free soil testing and cheap land to gardeners.</p>`;
+const L=["A","B","C","D"],ip=(q,c,why,n)=>({ctx:INFO,q:"Which paragraph has: <b>"+q+"</b>",o:L,c,fx:1,tg:L.map(()=>"Wrong paragraph"),why,n});
+const D={
+gist:{t:"Main Idea",e:"🎯",d:"Pick the best heading (Matching Headings)",items:[
+{ctx:"Many cities are building more bike lanes. Cyclists once shared narrow roads with cars, and accidents were common. Now protected lanes keep riders apart from traffic, and studies show injuries have fallen sharply.",o:["Protected lanes make cycling safer","Accidents between bikes and cars","Why cars are better than bikes"],c:0,tg:["","Too narrow (only a detail)","Opposite / off-topic"],why:"Accidents are only the background. The whole paragraph is about lanes making riders safer.",n:"सुरक्षित बाइक लेनले साइकल सुरक्षित बनाउँछ — यही मुख्य कुरा हो। दुर्घटना केवल एउटा विवरण हो।"},
+{ctx:"Early experts believed sleep was a passive state in which the brain simply switched off. However, brain scans in the 1950s revealed intense activity during some sleep stages. Today, scientists see sleep as an active process that is vital for memory.",o:["A changed view of what the brain does in sleep","Sleep is a passive state","The brain scans of the 1950s"],c:0,tg:["","First-sentence trap (old belief)","Too narrow (only a detail)"],why:"The first sentence gives an old idea. After 'However' comes the real point: the view changed.",n:"'However' पछि लेखकको असली कुरा आउँछ: निद्राबारे सोच बदलियो।"},
+{ctx:"Coffee first became popular in Arabia. Traders carried it to Europe in the 1600s, where coffee houses opened in London and Paris. These houses became places where people discussed news and ideas.",o:["How coffee spread and became a social habit","Coffee houses in London","Why coffee is good for health"],c:0,tg:["","Too narrow (only a detail)","Not mentioned"],why:"The paragraph follows coffee from Arabia to Europe to social life. 'Health' is never mentioned.",n:"कफी कसरी फैलियो र सामाजिक बानी बन्यो — पूरा अनुच्छेदले यही भन्छ।"},
+{ctx:"Some farmers use drones to check crops. A drone can fly over a field in minutes, a job that once took days on foot. It spots dry areas early, so water can be sent exactly where needed. However, drones are costly, and small farms often cannot afford them.",o:["Drones help farmers, but cost limits their use","The high price of drones","How farmers used to walk their fields"],c:0,tg:["","Too narrow (only the last part)","Too narrow (only a detail)"],why:"Both the benefits and the cost problem appear. The best heading covers the whole paragraph.",n:"ड्रोन उपयोगी छ तर महँगो छ — दुवै कुरा समेट्ने शीर्षक चाहिन्छ।"}]},
+para:{t:"Paraphrase Lab",e:"🔁",d:"How did the sentence change?",items:[
+"Prices increased sharply.|There was a steep rise in prices.|Word form|Word form (increase → rise)|वृद्धि हुनु (increase) → rise: क्रिया नाम बन्यो।",
+"The company hired 300 workers.|300 workers were employed by the firm.|Passive|Passive voice|सक्रिय वाक्य कर्मवाच्य (passive) मा बदलियो।",
+"Only 49% of voters agreed.|Fewer than half of voters agreed.|Number phrase|Number phrase|49% = 'half भन्दा कम'। संख्या शब्दमा बदलिन्छ।",
+"Scientists were surprised by the results.|Researchers were astonished by the findings.|Synonym|Synonym|उस्तै अर्थका शब्द: scientists=researchers, results=findings।",
+"Sales rose in 2020.|Sales fell in 2020.|Opposite (NOT a paraphrase)|Opposite meaning|rose र fell उल्टो अर्थ — यो paraphrase होइन, जाल हो!"].map(s=>{let[a,b,c,w,n]=s.split("|"),ty=["Synonym","Word form","Passive","Number phrase","Opposite (NOT a paraphrase)"];return{ctx:"<b>1.</b> "+a+"<br><b>2.</b> "+b,q:"How does sentence 2 relate to sentence 1?",o:ty,c:ty.indexOf(c),fx:1,tg:ty.map(()=>"Missed paraphrase type"),why:"This is: "+w+".",n}})},
+info:{t:"Info Hunter",e:"🔎",d:"Find the paragraph (Matching Information)",items:[
+ip("a danger that must be checked before starting",2,"C: 'contain lead … must be tested' = a danger to check. Matches by meaning, not by the same words.","C मा lead को खतरा छ र परीक्षण गर्नुपर्छ — यही 'danger'।"),
+ip("a recommendation for city governments",3,"D: 'Experts suggest that cities should…' = a recommendation.","D मा 'suggest … should' = सुझाव।"),
+ip("an example of a social benefit",1,"B: neighbours sharing tools and recipes = social benefit.","B मा छिमेकीहरू औजार र रेसिपी बाँड्छन् — सामाजिक फाइदा।"),
+ip("a figure showing how widespread the idea became",0,"A: 'over 1,400 gardens' = the figure. Numbers are easy anchors.","A मा 'over 1,400' — संख्या सबैभन्दा सजिलो संकेत हो।")]},
+sig:{t:"Signal Words",e:"🚦",d:"What does the signal word show?",items:[
+"Many people believe tea is healthier; <b>however</b>, studies show little difference.|Contrast|After a contrast word, the writer's real point comes: studies show little difference.|Contrast शब्द पछि लेखकको असली कुरा आउँछ।",
+"<b>Because</b> the river flooded, the town lost its bridge.|Cause|'Because' introduces the reason (the flood).|'Because' ले कारण देखाउँछ।",
+"Some birds, <b>such as</b> crows, can use tools.|Example|'Such as' introduces an example.|'Such as' ले उदाहरण दिन्छ।",
+"Rents rose; <b>as a result</b>, many families moved away.|Result|'As a result' introduces the effect.|'As a result' ले परिणाम देखाउँछ।",
+"<b>Although</b> the test was hard, most students passed.|Contrast|'Although' shows contrast: hard, but passed. The main point is that they passed.|'Although' = विपरीत; मुख्य कुरा: धेरैले पास गरे।"].map(s=>{let[q,c,w,n]=s.split("|"),ty=["Contrast","Cause","Example","Result"];return{q:q,o:ty,c:ty.indexOf(c),fx:1,tg:ty.map(()=>"Signal word"),why:w,n}})}
+};
+const lv=()=>Math.floor(S.xp/100)+1;
+function home(){let w=Object.entries(S.miss).sort((a,b)=>b[1]-a[1]).slice(0,3);
+A.innerHTML=`<div class=row><h2>IELTS Skill Gym</h2><span class=mu>Academic · 6.5</span></div>
+<div class=stats><div><b>${lv()}</b><span>Level</span></div><div><b>${S.xp}</b><span>XP</span></div><div><b>🔥${S.streak}</b><span>Day streak</span></div></div>
+<p class=mu>5 questions per round. Do one round of each mode daily.</p>`+Object.keys(D).map(k=>{let a=S.acc[k]||[0,0];return`<button class=mode data-m=${k}><b>${D[k].e} ${D[k].t}</b><small>${D[k].d}${a[1]?` · ${Math.round(100*a[0]/a[1])}% correct`:""}</small></button>`}).join("")+
+`<div class=card><b>Weak spots</b><br>${w.length?w.map(x=>`<span class=tag>${x[0]} ×${x[1]}</span>`).join(""):'<span class=mu>No mistakes logged yet.</span>'}</div><button class="btn ghost" id=rs>Reset progress</button>`;
+A.querySelectorAll('.mode').forEach(b=>b.onclick=()=>run(b.dataset.m,shuf(D[b.dataset.m].items).slice(0,5),0,0));
+$('#rs').onclick=()=>{if(confirm("Reset all progress?")){S={xp:0,streak:0,last:'',acc:{},miss:{}};save();home()}}}
+function run(m,its,i,ok){if(i>=its.length)return end(m,ok,its.length);
+let it=its[i],ix=it.o.map((_,k)=>k);if(!it.fx)ix=shuf(ix);
+A.innerHTML=`<div class=row><button class="ghost btn" style="width:auto;margin:0;padding:6px 12px" id=bk>←</button><span class=mu>${D[m].t} · ${i+1}/${its.length}</span></div><div class=bar style="margin:10px 0"><i style="width:${100*i/its.length}%"></i></div>
+<div class=card>${it.ctx?`<div class=ctx>${it.ctx.replace(/^<p class=ctx>|<\/p>$/g,"")}</div><br>`:""}<b>${it.q||"Which heading fits best?"}</b></div>`+ix.map(k=>`<button class=opt data-k=${k}>${it.o[k]}</button>`).join("")+`<div id=fb></div>`;
+$('#bk').onclick=home;let done=0;
+A.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(done)return;done=1;let k=+b.dataset.k,good=k==it.c;
+A.querySelectorAll('.opt').forEach(o=>{if(+o.dataset.k==it.c)o.classList.add('ok')});
+if(!good){b.classList.add('no');let t=it.tg[k];if(t)S.miss[t]=(S.miss[t]||0)+1}
+S.xp+=good?10:2;S.acc[m]=S.acc[m]||[0,0];S.acc[m][0]+=good?1:0;S.acc[m][1]++;save();
+$('#fb').innerHTML=`<div class=card><b>${good?"✅ Correct! +10 XP":"❌ Not quite. +2 XP"}</b>${good?"":`<br><span class=tag>${it.tg[k]}</span>`}<p>${it.why}</p><button class="btn ghost" id=npb>नेपाली</button><div class=np id=np hidden>${it.n}</div></div><button class=btn id=nx>${i+1<its.length?"Next":"Finish"}</button>`;
+$('#npb').onclick=()=>{$('#np').hidden=!$('#np').hidden};$('#nx').onclick=()=>run(m,its,i+1,ok+(good?1:0));$('#nx').scrollIntoView({behavior:"smooth",block:"end"})})}
+function end(m,ok,n){let t=new Date().toDateString(),y=new Date(Date.now()-864e5).toDateString();
+if(S.last!=t){S.streak=S.last==y?S.streak+1:1;S.last=t;S.xp+=20}save();
+A.innerHTML=`<div class=card style="text-align:center"><h2>Round done! 🎉</h2><p style="font-size:32px;margin:6px">${ok}/${n}</p><p class=mu>${ok==n?"Perfect score!":ok>=3?"Good work. Review the red tags on the home screen.":"Keep going. Mistakes are how you learn."}</p><p>Level ${lv()} · ${S.xp} XP · 🔥${S.streak}</p></div><button class=btn id=ag>Play again</button><button class="btn ghost" id=hm>Home</button>`;
+$('#ag').onclick=()=>run(m,shuf(D[m].items).slice(0,5),0,0);$('#hm').onclick=home}
+/* ---- CONTENT PACK 2 ---- */
+const GN="मुख्य विचार छान्नुहोस् — एउटा विवरण होइन, पूरा अनुच्छेदले भन्ने कुरा।";
+`Bees visit flowers to collect nectar. In doing so, they carry pollen from plant to plant, so many crops can produce fruit. Without bees, farmers would struggle to grow apples, almonds and other foods.|Bees are essential for food crops|Off-topic|How bees make honey|Detail trap|Apples and almonds|Honey and apples are details. The point: crops depend on bees.
+For decades, people assumed older adults could not learn new skills easily. Recent studies, however, show that seniors who take music or language classes improve their memory. Learning at any age keeps the brain active.|Older people can still learn and benefit|First-sentence trap|The belief that seniors cannot learn|Detail trap|Music classes for seniors|The first sentence is the old belief. 'However' leads to the real point.
+Plastic waste is a growing problem in oceans. Turtles mistake bags for jellyfish, and seabirds feed plastic pieces to their chicks. Scientists estimate millions of animals are harmed each year.|The harm plastic causes to sea animals|Too narrow|How turtles hunt jellyfish|Off-topic|Why plastic is cheap to make|Turtles are one example. The whole paragraph is about harm to animals.
+Remote work became common after 2020. Employees save hours of travel and report better balance between work and family. Yet some managers worry that teams communicate less and new staff learn more slowly.|Remote work: benefits and concerns|Too narrow|Time saved on travel|Too narrow|Managers' worries|Both benefits and worries appear. Choose the heading that covers both.
+The first public libraries were open only to wealthy readers. In the nineteenth century, reformers argued that books should be free for everyone. Over time, many countries passed laws to fund libraries from taxes.|How libraries became open to all|First-sentence trap|Libraries for wealthy readers|Detail trap|Taxes in the nineteenth century|The paragraph tells a change over time, not just the starting point.
+Mountain glaciers are shrinking fast. Rivers fed by melting ice may flood now but dry up later, threatening farms and cities downstream. Planners in several countries are already preparing.|Shrinking glaciers threaten future water supply|Too narrow|Floods in mountain rivers|Off-topic|Why glaciers are beautiful|Flooding is only the short-term part. The main point is the later water risk.
+Many people think fast food is the main cause of obesity. Researchers point out that inactive lifestyles and sugary drinks also play major roles. The problem, they say, has several causes, not one.|Obesity has multiple causes|First-sentence trap|Fast food as the main cause|Too narrow|Sugary drinks|The first sentence gives a common belief that the paragraph corrects.
+Electric cars produce no exhaust gases while driving. But making their batteries requires mining metals, which damages land and uses much energy. Their true environmental cost is therefore debated.|The environmental impact of electric cars is debated|Too narrow|No exhaust from electric cars|Too narrow|Mining of metals|The word 'But' shows two sides. The conclusion is that the cost is debated.
+Tea was discovered in China, according to legend, when leaves blew into an emperor's boiling water. Over centuries it became a national drink and later an important export. By the 1800s, tea trade shaped several economies.|The history and growing importance of tea|Detail trap|The legend of the emperor|Too narrow|Tea trade in the 1800s|The paragraph covers a long history. The legend is only the start.
+Many students believe that rereading a text is the best way to remember it. Psychologists have found that testing yourself is far more effective. Recalling facts without looking strengthens memory in a way rereading does not.|Self-testing works better than rereading|First-sentence trap|Rereading is the best method|Detail trap|Psychologists' studies|Sentence 1 is the common belief. Sentences 2-3 give the real point.
+City noise is rising. Traffic, construction and aircraft keep many residents awake. Studies link constant noise to stress and heart disease, so some cities now limit night-time building work.|Noise in cities harms health and prompts action|Too narrow|Aircraft noise|Off-topic|Why construction is needed|The paragraph links causes, health effects and action.
+The invention of the printing press in the 1400s made books cheaper. More people learned to read, ideas travelled faster, and new scientific theories spread across Europe within years rather than decades.|How printing changed the spread of knowledge|Detail trap|The price of books|Too narrow|Scientific theories only|Cheap books are the start. The main idea is faster spread of knowledge.`.split("\n").forEach(l=>{let[p,a,t1,b,t2,c,w]=l.split("|");D.gist.items.push({ctx:p,q:"Best heading for this paragraph?",o:[a,b,c],c:0,tg:["",t1,t2],why:w,n:GN})});
+const PT_=["Synonym","Word form","Passive","Number phrase","Opposite (NOT a paraphrase)"],PN={S:"उस्तै अर्थका फरक शब्द।",W:"शब्दको रूप बदलिन्छ (क्रिया ↔ नाम)।",P:"सक्रिय ↔ कर्मवाच्य (passive)।",N:"संख्या शब्दमा बदलिन्छ।",O:"उल्टो अर्थ — paraphrase होइन, जाल हो!"},PI="SWPNO";
+`Demand for housing grew quickly.|There was rapid growth in housing demand.|W
+The experiment was repeated by two teams.|Two teams repeated the experiment.|P
+Almost 20% of students left.|Roughly one in five students left.|N
+The results were disappointing.|The findings were unsatisfactory.|S
+Water use dropped in summer.|Water use rose in summer.|O
+Many people are worried about pollution.|Pollution is a concern for many people.|W
+The bridge was built in 1990.|Builders completed the bridge in 1990.|P
+About 75% of farmers use the method.|Around three quarters of farmers use the method.|N
+The government banned plastic bags.|The government permitted plastic bags.|O
+Researchers examined the effects of noise.|Scientists investigated the impact of noise.|S
+Teachers encouraged students to read.|Students were encouraged by teachers to read.|P
+Farmers depend on rainfall.|Farmers' dependence on rainfall is high.|W
+Tourism increased by 50%.|Tourism rose by half.|N
+The new method is cheaper.|The new method is more expensive.|O
+The island lacks fresh water.|The island has a shortage of fresh water.|W`.split("\n").forEach(l=>{let[a,b,t]=l.split("|"),c=PI.indexOf(t);D.para.items.push({ctx:"<b>1.</b> "+a+"<br><b>2.</b> "+b,q:"How does sentence 2 relate to sentence 1?",o:PT_,c,fx:1,tg:PT_.map(()=>"Missed paraphrase type"),why:"This is: "+PT_[c]+".",n:PN[t]})});
+const ST=["Contrast","Cause","Example","Result"],SN=["विपरीत कुरा: यसपछि आउने कुरा प्रायः मुख्य हुन्छ।","कारण देखाउँछ।","उदाहरण दिन्छ।","परिणाम देखाउँछ।"],SW=["shows contrast. The real point is usually the idea after it.","gives the reason.","introduces an example.","introduces the result."];
+`The match was cancelled <b>due to</b> heavy rain.|1
+Prices fell <b>since</b> demand was low.|1
+Crops failed <b>owing to</b> a long drought.|1
+Cities are growing; <b>in contrast</b>, villages are shrinking.|0
+Some like cold weather, <b>whereas</b> others prefer heat.|0
+<b>Despite</b> the high cost, many people bought it.|0
+It was cheap, <b>but</b> the quality was poor.|0
+The plan seemed risky. <b>Nevertheless</b>, it succeeded.|0
+Many fruits, <b>for instance</b> mangoes, need warm weather.|2
+Pets, <b>for example</b> dogs, can reduce stress.|2
+It rained all week; <b>therefore</b>, the festival moved indoors.|3
+The road closed, <b>so</b> buses took another route.|3
+Demand rose, <b>which led to</b> higher prices.|3
+The team trained hard; <b>consequently</b>, it won.|3
+Many animals, <b>such as</b> bats, sleep upside down.|2`.split("\n").forEach(l=>{let[q,c]=l.split("|");c=+c;D.sig.items.push({q:q,o:ST,c,fx:1,tg:ST.map(()=>"Signal word"),why:"This signal word "+SW[c],n:SN[c]})});
+const mk=a=>a.map((s,i)=>"<b>"+L[i]+"</b> "+s).join("<br>"),ip2=(P,q,c,why)=>({ctx:mk(P),q:"Which paragraph has: <b>"+q+"</b>",o:L,c,fx:1,tg:L.map(()=>"Wrong paragraph"),why,n:"अर्थ मिल्ने वाक्य खोज्नुहोस्, उही शब्द होइन।"});
+const P2=["In Rajasthan, villages once relied on stone tanks to collect monsoon rain. Families stored enough water to last the dry months.","Modern cities have largely forgotten this idea. Rain flows into drains and is wasted, while taps run dry in summer.","A pilot project in Chennai required every new building to install a rooftop collection system. Within ten years, groundwater levels rose noticeably.","Critics argue that the systems are expensive to fit in old buildings, and that poor maintenance can make stored water unsafe."];
+const P3=["Until the 1960s, many teachers warned parents that raising a child in two languages would cause confusion.","Later research told a different story. Bilingual children switched between languages easily and often scored higher on attention tests.","One study followed 200 children in Wales for twelve years, recording their school results each year.","Some experts caution that the benefits may be small, and that family income affects results more than language does."];
+D.info.items.push(ip2(P2,"a traditional method used in the past",0,"A: 'once relied on stone tanks' = a traditional past method."),ip2(P2,"a criticism of the approach",3,"D: 'Critics argue… expensive… unsafe' = criticism."),ip2(P2,"the result of a rule set by authorities",2,"C: a requirement for new buildings, then groundwater rose."),ip2(P2,"a contrast between waste and shortage",1,"B: rain is wasted while taps run dry."),
+ip2(P3,"a belief that has since been rejected",0,"A: teachers warned of confusion; later research disagreed."),ip2(P3,"how long a study lasted",2,"C: 'followed 200 children… twelve years'."),ip2(P3,"a cautious view about the evidence",3,"D: 'experts caution… benefits may be small'."),ip2(P3,"a positive finding about attention",1,"B: 'scored higher on attention tests'."));
+/* ---- LEARNING PATH (Mimo-style) ---- */
+document.head.insertAdjacentHTML('beforeend','<style>.node{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px;margin:8px 0}.node .ic{font-size:26px;width:46px;height:46px;border-radius:50%;background:rgba(79,70,229,.15);display:grid;place-items:center;flex:none}.node small{display:block;color:var(--mu)}.node.lock{opacity:.5}.sm{width:auto!important;margin:0!important;padding:6px 12px!important}</style>');
+S.lv=S.lv||{};
+const LV=[
+{t:"Cause & Result",e:"🔗",m:"sig",f:i=>i.c==1||i.c==3,idea:"Some words show <b>why</b> something happened (because, due to, since) or <b>what happened next</b> (so, therefore, as a result).",ex:"It rained, <b>so</b> we stayed home. → rain = cause; stayed home = result.",n:"Because/due to = कारण। So/therefore/as a result = परिणाम।"},
+{t:"Contrast & Example",e:"↔️",m:"sig",f:i=>i.c==0||i.c==2,idea:"After <b>however, but, although</b>, the writer's real point often comes. <b>For example, such as</b> start an example, not the main idea.",ex:"Tea is popular; <b>however</b>, sales fell. → the point: sales fell.",n:"However/but पछि मुख्य कुरा आउँछ। For example = उदाहरण।"},
+{t:"Synonyms & Word Forms",e:"🔁",m:"para",f:i=>i.c<2,idea:"IELTS rarely repeats words. It changes them: a <b>synonym</b> (big → large) or a <b>word form</b> (decide → decision).",ex:"<i>The prices rose.</i> = <i>There was a rise in prices.</i>",n:"शब्द बदलिन्छ तर अर्थ उही रहन्छ।"},
+{t:"Passive, Numbers, Opposites",e:"🔢",m:"para",f:i=>i.c>=2,idea:"Three more changes: <b>passive</b> (A did B → B was done by A), <b>numbers in words</b> (50% → half), and <b>opposites</b>, which are traps, not paraphrases.",ex:"<i>Sales rose</i> ≠ <i>Sales fell</i>. Always check the direction!",n:"Passive, संख्या→शब्द, र उल्टो अर्थ (जाल)।"},
+{t:"Main Idea vs Detail",e:"🎯",m:"gist",f:()=>1,idea:"A heading must cover the <b>whole</b> paragraph. A detail covers only one part. Beware the first sentence: it can be an old belief.",ex:"Paragraph about bike lanes + accidents → heading 'Lanes make cycling safer', not 'Accidents'.",n:"शीर्षकले पूरा अनुच्छेद समेट्नुपर्छ, एउटा विवरण होइन।"},
+{t:"Find the Information",e:"🔎",m:"info",f:()=>1,idea:"First decide the <b>type</b> of information (example, reason, result, warning, advice, number). Then scan for a sentence of that type. Words will be different.",ex:"'a danger to check' → look for words like <i>problem, risk, must be tested</i>.",n:"पहिले जानकारीको प्रकार छान्नुहोस्, अनि खोज्नुहोस्।"},
+{t:"Final Boss",e:"👑",m:"mix",f:()=>1,idea:"Mixed questions from every skill. You need 8 of 12 right on the first try.",ex:"Use everything you learned. Good luck!",n:"सबै सीपको मिश्रित परीक्षा।"}];
+const pool=l=>l.gen?l.gen():l.m=="mix"?shuf(["sig","para","gist","info"].flatMap(k=>shuf(D[k].items).slice(0,3))):shuf(D[l.m].items.filter(l.f)).slice(0,20);
+function home(){let w=Object.entries(S.miss).sort((a,b)=>b[1]-a[1]).slice(0,3);
+A.innerHTML=`<div class=row><h2>IELTS Skill Gym</h2><span class=mu>${U} · <a id=lo href=# style="color:var(--ac)">Log out</a></span></div><div class=stats><div><b>${lv()}</b><span>Level</span></div><div><b>${S.xp}</b><span>XP</span></div><div><b>🔥${S.streak}</b><span>Day streak</span></div></div><p class=mu>Finish each step to unlock the next.</p>`+LV.map((l,i)=>{let o=i==0||S.lv[i-1],s=S.lv[i]||0;return`<button class="node${o?"":" lock"}" data-i=${i}><span class=ic>${o?l.e:"🔒"}</span><span><b>${i+1}. ${l.t}</b><small>${s?"⭐".repeat(s):o?"Tap to start":"Locked"}</small></span></button>`}).join("")+`<button class=node id=sg><span class=ic>📚</span><span><b>Synonym Gym</b><small>112 words · spaced repetition</small></span></button><button class=node id=dr><span class=ic>🧠</span><span><b>Daily review</b><small>${w.length?"10 questions from your top mistakes":"Make a few mistakes first 😄"}</small></span></button><div class=card><b>Weak spots</b><br>${w.length?w.map(x=>`<span class=tag>${x[0]} ×${x[1]}</span>`).join(""):'<span class=mu>No mistakes yet.</span>'}</div><button class="btn ghost" id=bu>💾 Backup &amp; restore</button><button class="btn ghost" id=rs>Reset progress</button>`;
+A.querySelectorAll('.node').forEach(b=>b.onclick=()=>{let i=+b.dataset.i;if(i==0||S.lv[i-1])lesson(i)});
+$('#bu').onclick=bk2;if($('#dr'))$('#dr').onclick=daily;if($('#sg'))$('#sg').onclick=gym;if($('#lo'))$('#lo').onclick=e=>{e.preventDefault();logout()};$('#rs').onclick=()=>{if(RC||(RC=1,$('#rs').textContent="Tap again to confirm",0)){RC=0;S={xp:0,streak:0,last:'',acc:{},miss:{},lv:{},hist:{}};save();home()}}}
+function lesson(i){let l=LV[i];A.innerHTML=`<button class="btn ghost sm" id=bk>←</button><div class=card><h2>${l.e} ${l.t}</h2><p>${l.idea}</p><p class=ctx>${l.ex}</p><button class="btn ghost" id=npb>नेपाली</button><div class=np id=np hidden>${l.n}</div></div><button class="btn ghost" id=tm>⏱ Timed mode (45s each): ${TM?"ON":"OFF"}</button><button class=btn id=go>Start</button>${S.hist[i]?'<button class="btn ghost" id=lr>Review last attempt</button>':''}`;
+$('#bk').onclick=home;$('#npb').onclick=()=>{$('#np').hidden=!$('#np').hidden};$('#tm').onclick=()=>{TM=TM?0:45;lesson(i)};if($('#lr'))$('#lr').onclick=()=>rv(S.hist[i].map(([h,k])=>({it:IDX[h],k})).filter(e=>e.it),S.hist[i].length-1,()=>lesson(i));$('#go').onclick=()=>{let its=pool(l);its.n=its.length;qz(its,0,0,l,i)}}
+function qz(its,i,ok,l,li){A.dataset.d='f';if(i>=its.length)return fin(its.n,ok,l,li,its);
+let it=its[i],ix=it.o.map((_,k)=>k);if(!it.fx)ix=shuf(ix);
+A.innerHTML=`<div class=row><button class="ghost btn sm" id=bk>✕</button><span class=mu>${l.t} · ${Math.min(i+1,its.n)}/${its.n}${it.st?" · "+it.st:""}${it.rt?" · retry":""}</span>${its.h?'<button class="ghost btn sm" id=rb>← Previous</button>':'<span></span>'}</div>${TM?'<div class=mu id=tb style="text-align:right">⏱ '+TM+'s</div>':''}<div class=bar style="margin:10px 0"><i style="width:${100*i/its.length}%"></i></div><div class=card>${it.ctx?`<div class=ctx>${it.ctx.replace(/^<p class=ctx>|<\/p>$/g,"")}</div><br>`:""}<b>${it.q||"Which heading fits best?"}</b></div>`+ix.map(k=>`<button class=opt data-k=${k}>${it.o[k]}</button>`).join("")+`<button class=opt data-k=-1 hidden id=to></button><div id=fb></div>`;
+$('#bk').onclick=home;let d=0,g0=0;const rsm=()=>d?qz(its,i+1,ok+(g0&&!it.rt?1:0),l,li):qz(its,i,ok,l,li),go=()=>its.h&&(DIR='b',rv(its.h,its.h.length-1,rsm));if($('#rb'))$('#rb').onclick=go;SWP={r:go};clearInterval(TID);if(TM){let t=TM;TID=setInterval(()=>{if(d||!$('#tb')){clearInterval(TID);return}t--;$('#tb').textContent='⏱ '+t+'s';if(t<=0){clearInterval(TID);$('#to').click()}},1000)}
+A.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d)return;d=1;let k=+b.dataset.k,g=k==it.c;g0=g;if(it.w&&!it.rt)sgUp(it.w,g);(its.h=its.h||[]).push({it,k,ix});S.hist=S.hist||{};S.hist[li]=its.h.map(e=>[hs(e.it),e.k]);
+A.querySelectorAll('.opt').forEach(o=>{if(+o.dataset.k==it.c)o.classList.add('ok')});
+if(!g){b.classList.add('no');let t=it.tg[k];if(t)S.miss[t]=(S.miss[t]||0)+1;if(!it.rt)its.push(Object.assign({},it,{rt:1}))}
+S.xp+=g?10:2;save();
+$('#fb').innerHTML=`<div class=card><b>${g?"✅ Correct! +10 XP":"❌ Not quite. This one comes back later."}</b>${g?"":`<br><span class=tag>${it.tg[k]||"Time's up"}</span>`}<p>${it.why}</p><button class="btn ghost" id=npb>नेपाली</button><div class=np id=np hidden>${it.n}</div></div><button class=btn id=nx>Continue</button>`;
+$('#npb').onclick=()=>{$('#np').hidden=!$('#np').hidden};$('#nx').onclick=()=>qz(its,i+1,ok+(g&&!it.rt?1:0),l,li);$('#nx').scrollIntoView({behavior:"smooth",block:"end"})})}
+function fin(n,ok,l,li,its){let ne=l.m=="mix"?8:Math.ceil(.6*n),p=ok>=ne,st=p?(ok==n?3:ok>=n-1?2:1):0,t=new Date().toDateString(),y=new Date(Date.now()-864e5).toDateString();
+if(!its.done){its.done=1;if(p){S.lv[li]=Math.max(S.lv[li]||0,st);S.xp+=30}
+if(S.last!=t){S.streak=S.last==y?S.streak+1:1;S.last=t;S.xp+=20}}save();
+A.innerHTML=`<div class=card style="text-align:center"><h2>${p?"Level complete! 🎉":"Almost there 💪"}</h2><p style="font-size:34px;margin:6px">${"⭐".repeat(st)||"—"}</p><p>${ok}/${n} right on the first try${p?"":" · need "+ne+" to pass"}</p><p class=mu>Level ${lv()} · ${S.xp} XP · 🔥${S.streak}</p></div>`+(p&&li+1<LV.length?`<button class=btn id=nl>Next level →</button>`:"")+`<button class="btn ghost" id=rv>Review my answers</button><button class="btn ghost" id=rt>Try again</button><button class="btn ghost" id=hm>Map</button>`;
+if($('#nl'))$('#nl').onclick=()=>lesson(li+1);$('#rt').onclick=()=>li>=98?LAST():lesson(li);$('#rv').onclick=()=>rv(its.h,its.h.length-1,()=>fin(n,ok,l,li,its));SWP=null;$('#hm').onclick=home}
+
+/* ---- CONTENT PACK 3 ---- */
+`The flight was late <b>because of</b> fog.|1
+<b>Owing to</b> poor sales, the shop closed.|1
+The bridge closed <b>on account of</b> safety risks.|1
+Fewer people walk <b>since</b> cars became cheap.|1
+He failed the test <b>because</b> he did not study.|1
+The lake dried up <b>as a result of</b> low rainfall.|1
+Schools shut <b>due to</b> the storm.|1
+It was very cold, <b>so</b> the lake froze.|3
+Costs rose; <b>thus</b>, fewer people travelled.|3
+The factory closed. <b>As a consequence</b>, hundreds lost jobs.|3
+The medicine worked, <b>resulting in</b> a quick recovery.|3
+Rain stopped farming. <b>Hence</b>, food prices rose.|3
+The city is rich. <b>On the other hand</b>, many people live in poverty.|0
+<b>While</b> some prefer buses, others choose bikes.|0
+The test was easy. <b>Yet</b> many students failed.|0
+<b>In spite of</b> the rain, the match continued.|0
+The first study found a link; <b>however</b>, later work did not.|0
+Many sports, <b>including</b> tennis, need good balance.|2
+Some countries, <b>like</b> Japan, have very old populations.|2
+<b>For instance</b>, solar panels cost less every year.|2
+Hot places, <b>such as</b> deserts, have little rain.|2`.split("\n").forEach(l=>{let[q,c]=l.split("|");c=+c;D.sig.items.push({q,o:ST,c,fx:1,tg:ST.map(()=>"Signal word"),why:"This signal word "+SW[c]+(q.includes("as a result of")?" Careful: 'as a result OF' = cause, but 'as a result,' = result.":""),n:SN[c]})});
+`The rules are strict.|The regulations are tough.|S
+People were angry about the decision.|Citizens were furious about the ruling.|S
+The study began in 2015.|The research started in 2015.|S
+Experts warned of danger.|Specialists cautioned about risk.|S
+The area is very dry.|The region is extremely arid.|S
+Children need enough sleep.|Youngsters require adequate rest.|S
+Heavy rain damaged the crops.|The crops suffered damage from heavy rain.|W
+Students improved their grades.|There was an improvement in students' grades.|W
+The company expanded abroad.|There was an expansion of the company abroad.|W
+Many people disagree with the plan.|There is widespread disagreement over the plan.|W
+Doctors treated the patients quickly.|The patients received quick treatment.|W
+Pollution threatens fish.|Fish face a threat from pollution.|W
+Volunteers helped the village.|The village received help from volunteers.|W
+The city hosted the games.|The games were hosted by the city.|P
+Experts criticised the plan.|The plan was criticised by experts.|P
+Farmers grow rice here.|Rice is grown here by farmers.|P
+Workers repaired the road.|The road was repaired by workers.|P
+Over 99% of homes had power.|Almost all homes had power.|N
+The population doubled.|The population became twice as large.|N
+Exactly 25% of staff left.|A quarter of staff left.|N
+Exports grew last year.|Exports shrank last year.|O
+The report supports the theory.|The report rejects the theory.|O
+Most people approved.|Most people opposed.|O`.split("\n").forEach(l=>{let[a,b,t]=l.split("|"),c=PI.indexOf(t);D.para.items.push({ctx:"<b>1.</b> "+a+"<br><b>2.</b> "+b,q:"How does sentence 2 relate to sentence 1?",o:PT_,c,fx:1,tg:PT_.map(()=>"Missed paraphrase type"),why:"This is: "+PT_[c]+".",n:PN[t]})});
+`Honey never spoils. Jars found in ancient tombs were still safe to eat. Its low water content and natural acids stop bacteria from growing.|Why honey lasts so long|Detail trap|Ancient tombs|Off-topic|Where bees live|The tombs are an example. The paragraph explains the reason.
+Some schools now start later in the morning. Teenagers naturally fall asleep later, so early lessons leave them tired. After a later start, one district reported better grades and fewer late arrivals.|Later school starts help teenagers|Too narrow|Fewer late arrivals|Opposite|Why teenagers dislike school|The paragraph gives the reason and the results of the change.
+Street food is popular across Asia. It is cheap, quick and tied to local traditions. However, health officials warn that poor hygiene can spread illness, so many cities now inspect vendors.|Street food: popular, but needs safety checks|Too narrow|Cheap and quick meals|Too narrow|Health officials' warnings|'However' adds a second side. Choose the heading with both.
+Learning to swim is often seen as a luxury. In fact, drowning is a leading cause of death among children in many countries. Free lessons in schools have cut such deaths sharply.|Swimming lessons save children's lives|First-sentence trap|Swimming as a luxury|Detail trap|Free lessons in schools|'In fact' corrects the first sentence. The real point comes after it.`.split("\n").forEach(l=>{let[p,a,t1,b,t2,c,w]=l.split("|");D.gist.items.push({ctx:p,q:"Best heading for this paragraph?",o:[a,b,c],c:0,tg:["",t1,t2],why:w,n:GN})});
+const P4=["Green roofs, which are covered with plants, first became popular in Germany in the 1970s.","They keep buildings cooler in summer, which cuts the cost of air conditioning.","However, installing one can cost twice as much as a normal roof, and the structure must be strong enough to hold wet soil.","Toronto now requires large new buildings to have green roofs, and the city says it has seen cooler streets."],P5=["Many teachers once thought that computer games were a waste of time.","A recent survey of 500 teachers found that 70 percent now use games in at least one lesson.","Games let students make mistakes safely and try again, which helps them stay motivated.","Some parents remain unconvinced and worry that children spend too long looking at screens."];
+D.info.items.push(ip2(P4,"a place where the idea began",0,"A: 'first became popular in Germany'."),ip2(P4,"a financial benefit",1,"B: 'cuts the cost of air conditioning'."),ip2(P4,"a limit or difficulty",2,"C: 'However… twice as much… must be strong enough'."),ip2(P4,"a city that made a rule",3,"D: 'Toronto now requires…'."),
+ip2(P5,"an opinion that has changed",0,"A: teachers 'once thought' = old opinion; B shows the change."),ip2(P5,"a statistic about teachers",1,"B: '500 teachers… 70 percent'."),ip2(P5,"a reason games help learning",2,"C: safe mistakes help motivation."),ip2(P5,"a concern held by some people",3,"D: parents 'worry' about screens."));
+
+/* ---- REVIEW + BACKUP ---- */
+document.head.insertAdjacentHTML('beforeend','<style>.opt:disabled{opacity:1;color:inherit}textarea{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:8px}</style>');
+S.hist=S.hist||{};let DIR='f',SWP=null,RC=0,tx=0,ty=0;
+const hs=it=>{let s=(it.ctx||"")+it.q,h=0;for(let c of s)h=(h*31+c.charCodeAt(0))|0;return h.toString(36)},IDX={};
+Object.values(D).forEach(m=>m.items.forEach(x=>IDX[hs(x)]=x));
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+document.addEventListener('touchend',e=>{let dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;if(!SWP||!$('.opt'))return;if(Math.abs(dx)>70&&Math.abs(dy)<45){if(dx>0&&SWP.r)SWP.r();else if(dx<0&&SWP.l)SWP.l()}},{passive:true});
+function rv(h,j,ret0){const ret=()=>{A.dataset.d='f';ret0()};if(!h||!h.length)return ret();A.dataset.d=DIR;DIR='f';let e=h[j],it=e.it,ix=e.ix||it.o.map((_,k)=>k);
+A.innerHTML=`<div class=row><button class="ghost btn sm" id=rx>✕ Close</button><span class=mu>Answer ${j+1} of ${h.length}</span></div><div class=card style="margin-top:10px">${it.ctx?`<div class=ctx>${it.ctx.replace(/^<p class=ctx>|<\/p>$/g,"")}</div><br>`:""}<b>${it.q||"Which heading fits best?"}</b></div>`+ix.map(k=>`<button class="opt ${k==it.c?"ok":k==e.k?"no":""}" disabled>${it.o[k]}${k==e.k?" ← your answer":""}</button>`).join("")+`<div class=card><b>${e.k==it.c?"✅ You got this right":"❌ Correct answer is in green"}</b><p>${it.why}</p><button class="btn ghost" id=npb>नेपाली</button><div class=np id=np hidden>${it.n}</div></div><div class=row><button class="btn ghost" id=ol style="width:48%" ${j?"":"disabled"}>← Older</button><button class="btn ghost" id=nw style="width:48%" ${j<h.length-1?"":"disabled"}>Newer →</button></div><button class=btn id=bq>Done</button>`;
+const ol=()=>j&&(DIR='b',rv(h,j-1,ret0)),nw=()=>j<h.length-1?rv(h,j+1,ret0):ret();
+$('#rx').onclick=$('#bq').onclick=ret;$('#ol').onclick=ol;$('#nw').onclick=nw;$('#npb').onclick=()=>{$('#np').hidden=!$('#np').hidden};SWP={r:ol,l:nw}}
+function bk2(){let code=btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+A.innerHTML=`<button class="btn ghost sm" id=bk>←</button><div class=card><h2>💾 Backup & restore</h2><p class=mu>Progress saves automatically on this phone. To keep a safe copy or move to another device, copy this code and save it somewhere (Notes, or message it to yourself).</p><textarea id=cd readonly rows=4 style="width:100%;font-size:12px">${code}</textarea><button class=btn id=cp>Copy code</button></div><div class=card><b>Restore</b><textarea id=ri rows=4 placeholder="Paste your code here" style="width:100%;font-size:12px"></textarea><button class=btn id=rr>Restore progress</button><p id=mg class=mu></p></div>`;
+$('#bk').onclick=home;$('#cd').onclick=e=>e.target.select();
+$('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(code);$('#cp').textContent="Copied ✅"}catch(e){$('#cd').select();$('#cp').textContent="Selected: long-press to copy"}};
+$('#rr').onclick=()=>{try{let o=JSON.parse(decodeURIComponent(escape(atob($('#ri').value.trim()))));if(typeof o.xp!="number")throw 0;S=o;S.hist=S.hist||{};S.lv=S.lv||{};S.miss=S.miss||{};save();$('#mg').textContent="Restored ✅";setTimeout(home,700)}catch(e){$('#mg').textContent="That code didn't work. Paste the full code."}}}
+
+/* ---- CHAPTER 1 PILOT: varied drills ---- */
+const NN="कारण = किन भयो। परिणाम = त्यसपछि के भयो। Because पछि कारण, so पछि परिणाम आउँछ।";
+const mc=(st,ctx,q,o,c,tg,why)=>({st,ctx,q,o,c,tg:o.map((_,k)=>k==c?"":tg),why,n:NN});
+const T1="Signal word",T2="Cause/result mix-up",T3="Wrong family",T4="Missed paraphrase";
+const PX="The village library closed in March. The council said the building was unsafe after the roof leaked. Since then, children have had nowhere quiet to study, and their grades have dropped. Volunteers are now collecting money for repairs.";
+const C1={
+w:[mc("Warm-up","The road was closed <i>because of</i> ice.","Tap the words that show the CAUSE is coming.",["The road","closed","because of","ice"],2,T1,"'Because of' is followed by the cause: ice."),
+mc("Warm-up","Fuel prices rose, so many people used buses.","Tap the word that shows a RESULT is coming.",["rose","so","many","buses"],1,T1,"'So' is followed by the result: people used buses."),
+mc("Warm-up","The crops failed | owing to a long drought.","Which part is the CAUSE?",["The crops failed","owing to a long drought"],1,T2,"'Owing to' introduces the cause: the drought."),
+mc("Warm-up","The shop was busy, so the owner hired two helpers.","Which part is the RESULT?",["The shop was busy","the owner hired two helpers"],1,T2,"The hiring happened because it was busy, so it is the result.")],
+p:[mc("Practice","Prices fell ___ demand was low.","Fill the gap.",["because","however","for example","so"],0,T3,"The low demand is the reason, so 'because' fits."),
+mc("Practice","The river froze, ___ boats could not pass.","Fill the gap.",["because","so","although","for instance"],1,T3,"Boats not passing is the result, so 'so' fits."),
+mc("Practice","He missed the bus; ___, he arrived late.","Fill the gap.",["as a result","because","for example","but"],0,T3,"'As a result,' is followed by the result."),
+mc("Practice","Heavy snow closed the school.","Which sentence has the SAME meaning?",["The school closed because of heavy snow.","Heavy snow opened the school.","The school closed, so it snowed."],0,T2,"Same cause (snow), same result (closing). Option 3 flips them."),
+mc("Practice","Because the factory closed, many workers lost their jobs.","Which sentence has the SAME meaning?",["Many workers lost their jobs as a result of the factory closing.","The factory closed as a result of workers losing their jobs.","Many workers lost jobs before the factory closed."],0,T2,"Option 2 reverses cause and result."),
+mc("Practice","Poor harvests led to higher food prices.","Which sentence has the SAME meaning?",["Higher food prices caused poor harvests.","Food prices rose because of poor harvests.","Poor harvests followed higher food prices."],1,T2,"Poor harvests = cause; higher prices = result."),
+mc("Practice","","Which sentence has cause and result the WRONG WAY ROUND?",["The road flooded because it rained heavily.","It rained heavily because the road flooded.","The road flooded, so traffic stopped."],1,T2,"Flooding cannot cause the rain. The reasons are reversed."),
+mc("Practice","","Which sentence does NOT mean the same as the others?",["Low rainfall caused the lake to dry up.","The lake dried up due to low rainfall.","The lake dried up, so rainfall was low."],2,T2,"Option 3 reverses the link. The others say low rainfall came first.")],
+m:[mc("Mixed","","Which sentence shows a CAUSE–RESULT link?",["Tea is popular; however, coffee sells more.","Many fruits, such as mangoes, grow here.","Tickets sold out, so the concert moved to a bigger hall.","Although it was cold, we went out."],2,T3,"Only 'so' links a cause to its result. The others show contrast or an example."),
+mc("Mixed","","Which sentence does NOT show cause and result?",["Shops closed due to the strike.","Rents rose, so students moved out.","Cities, for example Delhi, are very crowded.","Wells dried up because of drought."],2,T3,"'For example' gives an example, not a cause."),
+mc("Mixed","The test was hard; ___, most students passed.","Fill the gap.",["however","therefore","because","for example"],0,T3,"Hard test, yet students passed. That is contrast, not cause and result."),
+mc("Mixed","Most farmers left the valley as a result of the floods.","Tap the words that introduce the CAUSE.",["Most farmers","left","as a result of","the valley"],2,T1,"'As a result OF' is followed by the cause: the floods."),
+mc("Mixed","Costs rose, therefore fewer people travelled.","Which sentence has the SAME meaning?",["Fewer people travelled because costs rose.","Costs rose because fewer people travelled.","Fewer people travelled, so costs fell."],0,T4,"Costs rising is the cause. Fewer travellers is the result.")],
+b:[mc("Mini-boss",PX,"Which sentence gives the REASON the library closed?",["The village library closed in March.","The council said the building was unsafe after the roof leaked.","Volunteers are now collecting money for repairs."],1,T2,"The unsafe building after the leak explains the closure."),
+mc("Mini-boss",PX,"What was the RESULT of the closure for children?",["They have nowhere quiet to study, and grades dropped.","Volunteers collected money.","The roof leaked."],0,T2,"'Since then' introduces what followed the closure."),
+mc("Mini-boss",PX,"Which statement matches the paragraph?",["Falling grades are linked to the library closing.","The roof leaked because grades dropped.","Volunteers closed the library."],0,T4,"The paragraph links the closure to lower grades.")]};
+Object.values(C1).flat().forEach(x=>IDX[hs(x)]=x);
+LV[0].gen=()=>[...shuf(C1.w),...shuf(C1.p),...shuf(C1.m),...C1.b].map(x=>({...x}));
+LV[0].idea="A <mark>cause</mark> is WHY something happened. A <u>result</u> is WHAT happened because of it. Signal words point to them: after <b>because, due to, owing to</b> comes the cause. After <b>so, therefore, as a result,</b> comes the result.";
+LV[0].ex="<mark>Heavy rain fell</mark>, <b>so</b> <u>the match stopped</u>.<br><u>The match stopped</u> <b>because of</b> <mark>heavy rain</mark>.<br>Same facts, different order. Watch out: <b>as a result OF</b> + cause, but <b>as a result,</b> + result.";
+LV[0].n="कारण = किन भयो। परिणाम = के भयो। Because पछि कारण, so पछि परिणाम आउँछ।";
+
+/* ---- ANIMATION + CHAPTERS 2-3 ---- */
+document.head.insertAdjacentHTML('beforeend','<style>@keyframes sl{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}@keyframes pop{0%{transform:scale(.96)}60%{transform:scale(1.03)}100%{transform:scale(1)}}@keyframes shk{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}#app>*{animation:sl .28s ease-out both}#fb>*{animation:sl .22s ease-out both}.opt.ok{animation:pop .3s}.opt.no{animation:shk .3s}@media(prefers-reduced-motion:reduce){#app>*,#fb>*,.opt{animation:none!important}}</style>');
+const mf=n=>(st,ctx,q,o,c,tg,why)=>({st,ctx,q,o,c,tg:o.map((_,k)=>k==c?"":tg),why,n});
+const m2=mf("However/but/yet पछि मुख्य कुरा आउँछ। For example पछि उदाहरण आउँछ, मुख्य कुरा होइन।"),m3=mf("एउटै अर्थ, फरक शब्द: increase = rise। शब्दको रूप पनि बदलिन्छ: decide → decision।");
+const PY="Solar power is often called expensive. Panels did cost a lot ten years ago, but prices have fallen by about 80 percent. For example, a home system that once cost thousands can now be bought for a fraction of that. Nevertheless, many families still lack the savings to install one.";
+const PZ="Over the past decade, the number of electric cars on our roads has grown rapidly. Experts attribute this expansion to falling battery costs. Nevertheless, a shortage of charging points remains a barrier for many drivers.";
+const K="Contrast word",F="First-sentence trap",D_="Detail trap",W3="Wrong meaning",C2={
+w:[m2("Warm-up","Many people like tea; <i>however</i>, sales of coffee are higher.","Tap the word that signals a CONTRAST.",["Many","like","however","higher"],2,K,"'However' shows contrast with what came before."),
+m2("Warm-up","Cities have grown, whereas villages have shrunk.","Tap the contrast word.",["grown","whereas","villages","shrunk"],1,K,"'Whereas' compares two opposite things."),
+m2("Warm-up","The plan sounded perfect | yet it failed within a year.","Which part holds the writer's REAL point?",["The plan sounded perfect","yet it failed within a year"],1,F,"After 'yet', the writer gives the surprise: the plan failed."),
+m2("Warm-up","Many sports, such as tennis, need quick reactions.","Tap the words that start an EXAMPLE.",["Many sports","such as","tennis","need"],1,K,"'Such as' introduces an example (tennis).")],
+p:[m2("Practice","The ticket was cheap, ___ the seats were uncomfortable.","Fill the gap.",["but","so","for example","because"],0,"Wrong family","Cheap vs uncomfortable: contrast, so 'but'."),
+m2("Practice","Some animals sleep little. ___, giraffes rest only a few hours a day.","Fill the gap.",["For example","However","Therefore","Because"],0,"Wrong family","Giraffes are an example of animals that sleep little."),
+m2("Practice","___ the heavy traffic, we arrived on time.","Fill the gap.",["Despite","Because of","For instance","Therefore"],0,"Wrong family","Traffic should cause delay, yet they were on time: contrast."),
+m2("Practice","Many believed the earth was flat. However, sailors' maps showed otherwise.","What is the writer's REAL point?",["The earth was flat","Evidence showed the earth was not flat","Sailors made maps"],1,F,"The first sentence is the old belief. 'However' leads to the real point."),
+m2("Practice","Online shopping is convenient. Yet it can lead to overspending.","What is the writer's main WARNING?",["Shopping is convenient","Online shopping can lead to overspending","Shops are closing"],1,F,"After 'Yet' comes the problem."),
+m2("Practice","Although the exam was hard, most students passed.","Which sentence has the SAME meaning?",["Most students passed despite the hard exam.","Most students failed because the exam was hard.","The exam was easy, so most passed."],0,"Missed paraphrase","'Although' and 'despite' both show contrast."),
+m2("Practice","Rents are rising, whereas wages are flat.","Which sentence has the SAME meaning?",["Wages are flat while rents are going up.","Both rents and wages are rising.","Rents are flat, whereas wages rise."],0,"Missed paraphrase","Option 3 swaps the two things."),
+m2("Practice","Many countries, for example Japan and Italy, have ageing populations.","Which is the MAIN idea, not the example?",["Japan and Italy","Many countries have ageing populations","Countries are very old"],1,D_,"Japan and Italy are only examples.")],
+m:[m2("Mixed","","Which sentence shows CONTRAST?",["Rain fell, so the match stopped.","Cars are cheap; in contrast, trains are costly.","Fruits such as apples are healthy.","Prices rose because of demand."],1,"Wrong family","'In contrast' compares opposites."),
+m2("Mixed","","Which sentence gives an EXAMPLE?",["Costs rose; however, sales stayed high.","Birds, including owls, hunt at night.","The lake dried up due to drought.","The study was small, but useful."],1,"Wrong family","'Including owls' gives an example."),
+m2("Mixed","The road was closed; ___, buses took another route.","Fill the gap.",["therefore","however","for example","whereas"],0,"Wrong family","Closed road leads to a new route: cause and result."),
+m2("Mixed","Some students prefer books, while others choose screens.","Tap the contrast word.",["prefer","while","others","screens"],1,K,"'While' contrasts two groups here."),
+m2("Mixed","Fast food is cheap and tasty. Nevertheless, doctors link it to heart disease.","What is the writer's REAL point?",["Fast food is cheap and tasty","Doctors link fast food to heart disease","Doctors like fast food"],1,F,"'Nevertheless' leads to the main point.")],
+b:[m2("Mini-boss",PY,"What is the writer's real point about the cost of solar power?",["Solar power is expensive","Solar power has become much cheaper","Solar panels are old"],1,F,"'But prices have fallen' corrects the first sentence."),
+m2("Mini-boss",PY,"Which sentence is an EXAMPLE?",["A home system that once cost thousands can now be bought for a fraction of that.","Panels did cost a lot ten years ago.","Many families lack savings."],0,D_,"'For example' introduces it."),
+m2("Mini-boss",PY,"Which sentence shows a remaining PROBLEM?",["Solar power is often called expensive.","Prices have fallen by about 80 percent.","Many families still lack the savings to install one."],2,K,"'Nevertheless' introduces the problem that remains.")]};
+const C3={
+w:[m3("Warm-up","","Which word means the SAME as 'huge'?",["enormous","tiny","hungry","quiet"],0,W3,"Huge = enormous."),
+m3("Warm-up","","Which word means about the same as 'reduce'?",["cut","build","raise","ignore"],0,W3,"Reduce = cut."),
+m3("Warm-up","","Which is the NOUN form of 'decide'?",["decision","decided","deciding","decisive"],0,"Word form","decide (verb) → decision (noun)."),
+m3("Warm-up","","Which is the VERB form of 'growth'?",["grow","grown","greatly","growing"],0,"Word form","growth (noun) → grow (verb).")],
+p:[m3("Practice","Prices rose sharply.","Which sentence has the SAME meaning?",["There was a sharp rise in prices.","Prices fell sharply.","Prices were sharp."],0,"Missed paraphrase","rose (verb) → a rise (noun)."),
+m3("Practice","Many people criticised the plan.","Which sentence has the SAME meaning?",["The plan received widespread criticism.","The plan was praised.","Many plans were criticised."],0,"Missed paraphrase","criticised → criticism; many people → widespread."),
+m3("Practice","Scientists examined the effects of noise.","Which sentence has the SAME meaning?",["Researchers investigated the impact of noise.","Researchers ignored the noise.","Noise examined the scientists."],0,"Missed paraphrase","Three synonyms: scientists/researchers, examined/investigated, effects/impact."),
+m3("Practice","The firm employs 500 people.","Which sentence has the SAME meaning?",["The company has 500 workers.","The company fired 500 people.","The firm is employed by 500 people."],0,"Missed paraphrase","firm = company; employs 500 people = has 500 workers."),
+m3("Practice","Sleep is vital for health.","'Vital' is closest to:",["essential","optional","harmful","rare"],0,W3,"Vital = essential."),
+m3("Practice","Water is scarce here.","'Scarce' means:",["hard to find","very clean","expensive","cold"],0,W3,"Scarce = in short supply."),
+m3("Practice","","Which pair does NOT mean the same?",["rise – increase","decline – fall","reduce – boost"],2,"Opposite trap","Reduce and boost are opposites."),
+m3("Practice","","Which pair is NOT a verb–noun pair?",["decide – decision","grow – growth","happy – happiness"],2,"Word form","'Happy' is an adjective. The others are verb–noun.")],
+m:[m3("Mixed","The city's population doubled.","Which sentence is a paraphrase?",["The number of people in the city became twice as large.","The city got smaller.","Cities double in size every year."],0,"Missed paraphrase","Doubled = became twice as large."),
+m3("Mixed","","Which word is closest to 'enormous' in 'an enormous gap'?",["vast","tiny","brief","clear"],0,W3,"Enormous = vast."),
+m3("Mixed","Experts disagree about the cause.","Which sentence has the SAME meaning?",["There is disagreement among specialists over the cause.","Experts agree on the cause.","The cause disagrees with experts."],0,"Missed paraphrase","disagree → disagreement; experts → specialists."),
+m3("Mixed","The ___ of the bridge took two years. (build)","Choose the correct noun.",["construction","constructed","construct","constructive"],0,"Word form","A noun is needed after 'The'."),
+m3("Mixed","","Which word does NOT fit with the others?",["increase","rise","growth","decline"],3,"Opposite trap","Decline is the opposite direction.")],
+b:[m3("Mini-boss",PZ,"Which sentence means 'more electric cars are being driven'?",["The number of electric cars has grown rapidly.","Experts attribute this expansion to falling battery costs.","A shortage of charging points remains a barrier."],0,"Missed paraphrase","'Grown rapidly' = more, quickly."),
+m3("Mini-boss",PZ,"'Experts attribute this expansion to falling costs' means experts...",["say it was caused by falling costs","say it will end because of costs","ignore falling costs"],0,"Wrong meaning","Attribute to = say it was caused by."),
+m3("Mini-boss",PZ,"'A barrier' is closest to:",["an obstacle","a benefit","a battery"],0,W3,"Barrier = obstacle.")]};
+Object.values({...C2,...{x:[]}}).flat().concat(Object.values(C3).flat()).forEach(x=>IDX[hs(x)]=x);
+const gn=C=>()=>[...shuf(C.w),...shuf(C.p),...shuf(C.m),...C.b].map(x=>({...x}));
+LV[1].gen=gn(C2);LV[2].gen=gn(C3);
+LV[1].idea="After <b>however, but, yet, although, whereas, despite</b>, the writer's <mark>real point</mark> often comes. After <b>for example, such as, including</b> comes an example. An example is a detail, not the main idea.";
+LV[1].ex="Many believed X. <b>However</b>, <mark>the evidence showed Y.</mark> → point = Y.<br>Birds, <b>such as</b> owls, hunt at night. → owls = example only.";
+LV[1].n="However/but/yet पछि मुख्य कुरा आउँछ। For example पछि उदाहरण।";
+LV[2].idea="IELTS rarely repeats words. It uses a <mark>synonym</mark> (huge → enormous) or a different <u>word form</u> (decide → decision). Both mean the same thing.";
+LV[2].ex="<i>Prices <b>rose</b> sharply.</i> = <i>There was a sharp <b>rise</b> in prices.</i><br><i>Experts <b>examined</b> the effects.</i> = <i>Researchers <b>investigated</b> the impact.</i>";
+LV[2].n="एउटै अर्थ, फरक शब्द वा शब्दको रूप। rose → rise, examined → investigated।";
+
+/* ---- DIRECTIONAL ANIMATION + CHAPTERS 4-5 ---- */
+document.head.insertAdjacentHTML('beforeend','<style>@keyframes slb{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}#app[data-d="b"]>*{animation-name:slb}</style>');
+const m4=mf("Passive: कर्ता र कर्मको ठाउँ साटिन्छ। 50% = half। उल्टो अर्थ = जाल, paraphrase होइन।"),m5=mf("शीर्षकले पूरा अनुच्छेद समेट्नुपर्छ: धेरै साँघुरो पनि होइन, धेरै फराकिलो पनि होइन।");
+const PA="Last year, a survey of 400 commuters was carried out by the city council. Nearly half said they now cycle to work, compared with only one in ten five years ago. The council has therefore increased cycling funding, whereas spending on car parks has been cut.";
+const PB="Mountain villages once relied on stone tanks to store monsoon rain. Modern cities forgot this idea, and rain now runs into drains while taps run dry. A project in Chennai required rooftop collection systems in new buildings, and groundwater rose within ten years. Critics note the systems are costly to fit in old buildings.";
+const SP="Ten years ago solar panels were costly. Since then prices have fallen about 80%, and installation has become common.";
+const PS="Passive mix-up",NM="Number phrase",OP="Opposite trap",NR="Too narrow",BR="Too broad";
+const C4={
+w:[m4("Warm-up","The city hosted the games.","Which is the PASSIVE version?",["The games were hosted by the city.","The city was hosting the games.","The games hosted the city."],0,PS,"Passive: the thing receiving the action comes first."),
+m4("Warm-up","50% of voters agreed.","Which phrase means the same as '50%'?",["half","a quarter","double","most"],0,NM,"50% = half."),
+m4("Warm-up","<b>1.</b> Sales rose in 2020.<br><b>2.</b> Sales fell in 2020.","Do these two sentences mean the same?",["Yes, a paraphrase","No, opposite meaning","No, unrelated"],1,OP,"Rose and fell are opposites."),
+m4("Warm-up","","Which means 'doubled'?",["became twice as large","became half","stayed the same","rose slightly"],0,NM,"Doubled = twice as large.")],
+p:[m4("Practice","Experts criticised the plan.","Which sentence has the SAME meaning?",["The plan was criticised by experts.","Experts were criticised by the plan.","The plan criticised experts."],0,PS,"The plan receives the action."),
+m4("Practice","Only 2% of students failed.","Which is closest?",["Very few students failed.","Many students failed.","Half of students failed."],0,NM,"2% is a very small number."),
+m4("Practice","About 75% of farmers use the method.","Which is closest?",["Around three quarters of farmers use the method.","Around a quarter of farmers use the method.","Three farmers use the method."],0,NM,"75% = three quarters."),
+m4("Practice","Unemployment fell from 10% to 5%.","Which is correct?",["Unemployment was cut by half.","Unemployment doubled.","Unemployment rose slightly."],0,NM,"10 to 5 = halved."),
+m4("Practice","","Which sentence is NOT a paraphrase of 'Exports grew last year'?",["Exports increased last year.","Exports rose last year.","Exports shrank last year."],2,OP,"Shrank is the opposite."),
+m4("Practice","The report supports the theory.","Which sentence has the OPPOSITE meaning?",["The report rejects the theory.","The report backs the theory.","The theory is supported by the report."],0,OP,"Supports vs rejects."),
+m4("Practice","The bridge was built in 1990.","Which sentence is NOT a paraphrase?",["Builders completed the bridge in 1990.","The bridge was constructed in 1990.","The bridge was destroyed in 1990."],2,OP,"Destroyed is the opposite of built."),
+m4("Practice","Exactly 25% of staff left.","Which is the same?",["A quarter of staff left.","Half of staff left.","Three quarters of staff left."],0,NM,"25% = a quarter.")],
+m:[m4("Mixed","Prices fell by 50%.","Which is the same?",["Prices were halved.","Prices doubled.","Prices rose by half."],0,NM,"Fell by 50% = halved."),
+m4("Mixed","","Which pair is a true paraphrase?",["The government banned plastic bags. – Plastic bags were banned by the government.","The government banned plastic bags. – The government permitted plastic bags.","Most people approved. – Most people opposed."],0,PS,"Only the first pair keeps the meaning."),
+m4("Mixed","Almost all homes had power.","Which number is closest?",["Over 95%","About 50%","Under 10%"],0,NM,"'Almost all' = very high."),
+m4("Mixed","The new method is cheaper.","Which has the OPPOSITE meaning?",["The new method is more expensive.","The new method costs less.","The new method is less costly."],0,OP,"Cheaper vs more expensive."),
+m4("Mixed","The population tripled.","Which is the same?",["It became three times as large.","It fell by a third.","It rose by 3%."],0,NM,"Tripled = three times.")],
+b:[m4("Mini-boss",PA,"Which phrase means about 50%?",["Nearly half","One in ten","Increased funding"],0,NM,"'Nearly half' = just under 50%."),
+m4("Mini-boss",PA,"Which sentence uses the passive to show who ran the survey?",["A survey of 400 commuters was carried out by the city council.","The council has therefore increased cycling funding.","Spending on car parks has been cut."],0,PS,"'Was carried out by' is passive."),
+m4("Mini-boss",PA,"Which change goes in the OPPOSITE direction to the cycling funding?",["Spending on car parks was cut","Cycling rose to nearly half","The survey had 400 people"],0,OP,"Funding up, car-park spending down.")]};
+const C5={
+w:[m5("Warm-up","Bees pollinate crops. Without them, apples and almonds would be hard to grow.","Which is the MAIN idea?",["Bees are important for crops","Apples are tasty","Almonds grow in California"],0,NR,"Apples and almonds are examples."),
+m5("Warm-up","Cities are adding bike lanes. Cyclists feel safer, and injuries have fallen.","Which part is just a DETAIL?",["Injuries have fallen","Cities are making cycling safer"],0,NR,"The fall in injuries supports the main idea."),
+m5("Warm-up","","A good heading covers...",["the whole paragraph","only the first sentence","only the last sentence"],0,NR,"A heading must cover the whole paragraph."),
+m5("Warm-up","Many thought sleep was passive. However, scans show the brain is active during sleep.","Which is the FIRST-SENTENCE TRAP?",["Sleep is a passive state","The brain is active during sleep"],0,"First-sentence trap","The first sentence is the old belief.")],
+p:[m5("Practice","Remote work saves travel time. Many workers also report better family balance. Some managers, however, worry about weaker teamwork.","Best heading?",["Remote work: benefits and worries","Travel time saved","Managers' worries"],0,NR,"The other two cover only one part."),
+m5("Practice","Honey never spoils. Jars in ancient tombs were still edible because honey has little water and natural acids.","Best heading?",["Why honey lasts so long","Ancient tombs","Honey's sweet taste"],0,NR,"The tombs are just an example."),
+m5("Practice","Learning to swim is often seen as a luxury. In fact, drowning is a leading cause of child deaths, and free school lessons have cut it sharply.","Best heading?",["Swimming lessons save lives","Swimming as a luxury","Free schools"],0,"First-sentence trap","'In fact' corrects the first sentence."),
+m5("Practice","Coffee began in Arabia and reached Europe in the 1600s. Coffee houses there became places to discuss news.","Best heading?",["How coffee spread and became social","Coffee houses in London","Arabian traders"],0,NR,"The paragraph covers a whole journey."),
+m5("Practice",SP,"Which heading is TOO BROAD?",["Falling prices of solar panels","Energy","Panel costs in 2015"],1,BR,"'Energy' covers far more than the paragraph."),
+m5("Practice",SP,"Which heading is TOO NARROW?",["Falling prices of solar panels","Energy","Panel costs in 2015"],2,NR,"2015 is just one detail."),
+m5("Practice","Plastic bags harm sea animals. Turtles mistake them for jellyfish, and seabirds feed plastic to chicks.","Best one-sentence summary?",["Plastic waste harms marine animals.","Turtles eat jellyfish.","Plastic bags are cheap."],0,NR,"Turtles and seabirds are examples of harm."),
+m5("Practice","Teenagers naturally fall asleep later. Schools starting later saw better grades and fewer late arrivals.","Best one-sentence summary?",["Later school starts benefit teenagers.","Teenagers dislike mornings.","Fewer students were late."],0,NR,"Grades and lateness are results.")],
+m:[m5("Mixed","Street food is cheap and popular. However, poor hygiene can spread illness, so cities inspect vendors.","Best heading?",["Street food: popular but needs checks","Cheap meals","Hygiene rules"],0,NR,"Both sides appear in the paragraph."),
+m5("Mixed","Libraries are changing. They now lend tools and host classes. Some even offer quiet workspaces.","Which is the TOPIC sentence?",["Libraries are changing.","They now lend tools and host classes.","Some even offer quiet workspaces."],0,NR,"Sentences 2 and 3 are examples of the change."),
+m5("Mixed","Many students reread to remember. Psychologists find self-testing works far better.","What is the REAL point?",["Self-testing beats rereading","Rereading is best","Psychologists reread"],0,"First-sentence trap","The first sentence is the common belief."),
+m5("Mixed","Glaciers are shrinking. Rivers may flood now but dry up later, threatening farms downstream.","Best heading?",["Shrinking glaciers threaten future water","River floods","Farms"],0,NR,"Floods and farms are parts of the idea."),
+m5("Mixed","The printing press made books cheaper. More people learned to read and ideas spread faster.","Which is a DETAIL, not the main idea?",["Books became cheaper","Printing changed how knowledge spreads"],0,NR,"Cheaper books is one step in the change.")],
+b:[m5("Mini-boss",PB,"Best heading for this paragraph?",["Collecting rainwater: past, present and results","Stone tanks","Critics"],0,NR,"It covers history, today and results."),
+m5("Mini-boss",PB,"Which heading is TOO NARROW?",["Chennai's rooftop rule","Rainwater collection and its limits","Water"],0,NR,"Chennai is one example."),
+m5("Mini-boss",PB,"Which heading is TOO BROAD?",["Chennai's rooftop rule","Rainwater collection and its limits","Water"],2,BR,"'Water' covers far more than this paragraph.")]};
+[C4,C5].forEach(C=>Object.values(C).flat().forEach(x=>IDX[hs(x)]=x));
+LV[3].gen=gn(C4);LV[4].gen=gn(C5);
+LV[3].idea="Three more ways IELTS changes a sentence: <b>passive</b> (A did B → B was done by A), <b>numbers in words</b> (50% → half, 25% → a quarter, doubled → twice as large), and <b>opposites</b>. Opposites are traps, not paraphrases.";
+LV[3].ex="<i>Experts criticised the plan.</i> = <i>The plan was criticised by experts.</i><br><i>Only 2%</i> = <i>very few</i>. But <i>Sales rose</i> ≠ <i>Sales fell</i>.";
+LV[3].n="Passive, संख्या→शब्द, र उल्टो अर्थ (जाल)।";
+LV[4].idea="A heading must cover the <mark>whole paragraph</mark>. <b>Too narrow</b> = only one detail. <b>Too broad</b> = covers much more. Watch the first sentence: it can be an old belief that <b>however</b> or <b>in fact</b> corrects.";
+LV[4].ex="Bike-lane paragraph: 'Lanes make cycling safer' ✅ · 'Accidents' ❌ too narrow · 'Transport' ❌ too broad.";
+LV[4].n="शीर्षक पूरा अनुच्छेदको लागि हुनुपर्छ: धेरै साँघुरो/फराकिलो होइन।";
+
+/* ---- CHAPTER 6 + FINAL BOSS ---- */
+const m6=mf("पहिले जानकारीको प्रकार (उदाहरण, कारण, समस्या, सल्लाह, संख्या) पत्ता लगाउनुहोस्, अनि अनुच्छेद खोज्नुहोस्।");
+const P6=["Around one in five workers in developed countries now works at night, according to a 2019 survey.","Night work disrupts the body clock, and doctors link it to sleep problems and heart disease.","Some companies have responded by offering longer breaks and free health checks.","However, many night workers say the extra pay is the main reason they keep their jobs."];
+const P7=["Beekeeping on city rooftops began in Paris in the 1990s and has since spread to dozens of cities.","City bees often produce more honey than country bees, because gardens flower for most of the year.","Yet critics warn that too many hives can leave wild bees without enough food.","Experts advise cities to limit hives and plant more flowers."];
+const P8=["Language-learning apps have been downloaded over a billion times, a figure that has doubled in five years.","Their popularity is partly explained by short lessons that fit into busy days.","Some linguists argue, however, that apps teach vocabulary well but give little speaking practice.","As a result, many learners now combine apps with conversation groups."];
+const sg=(st,x)=>({...x,st}),TY="Wrong info type",KW="Keyword trap";
+const tq=(q,o,w)=>m6("Warm-up","<i>"+q+"</i>","What TYPE of information is this?",o,0,TY,w);
+const C6={
+w:[tq("Experts advise cities to limit hives.",["advice","a reason","a statistic","an example"],"'Advise' signals advice."),
+tq("Around one in five workers works at night.",["a statistic","a reason","advice","a problem"],"A number or proportion = a statistic."),
+tq("Too many hives can leave wild bees without enough food.",["a problem","an example","a result","advice"],"Harm to bees is a problem."),
+tq("City bees make more honey because gardens flower most of the year.",["a reason","a statistic","advice","an example"],"'Because' gives a reason.")],
+p:[sg("Practice",ip2(P6,"a health risk",1,"B: 'sleep problems and heart disease' = health risks.")),
+sg("Practice",ip2(P6,"how employers have reacted",2,"C: 'responded by offering…' = reaction.")),
+sg("Practice",ip2(P6,"a figure showing how common night work is",0,"A: 'one in five workers'.")),
+sg("Practice",ip2(P6,"a reason workers stay in their jobs",3,"D: 'extra pay is the main reason'.")),
+sg("Practice",ip2(P7,"where the practice began",0,"A: 'began in Paris'.")),
+sg("Practice",ip2(P7,"a recommendation",3,"D: 'Experts advise…'.")),
+m6("Practice",mk(P7),"A student chose B for 'a worry about other species'. Why is B wrong?",["B is about honey output, not a worry","B has no bees","B is about Paris"],0,KW,"B mentions bees, but the information type is a benefit, not a worry. C is the worry."),
+m6("Practice",mk(P6),"A student chose A for 'a health risk' because it mentions workers. What is the mistake?",["Matching a topic word, not the information type","Choosing the first paragraph","Reading too slowly"],0,KW,"Match the type of information, not just the topic.")],
+m:[m6("Mixed",mk(P6),"Which statement is NOT supported by the paragraphs?",["Night work may harm health.","Some employers offer health checks.","Night workers earn less than day workers.","About 20% of workers work at night."],2,"Not in text","Nothing says night workers earn less. D says they value extra pay."),
+sg("Mixed",ip2(P6,"pay is why people stay in night jobs",3,"D: 'extra pay is the main reason'.")),
+m6("Mixed",mk(P7),"Which word starts the PROBLEM in paragraph C?",["Yet","Beekeeping","Experts","Because"],0,"Signal word","'Yet' signals a contrast, here a worry."),
+m6("Mixed",mk(P6),"Paragraph D starts with 'However'. What does that tell you?",["It gives a contrasting idea","It gives an example","It gives a result","It is a conclusion"],0,"Signal word","'However' introduces a contrast."),
+sg("Mixed",ip2(P7,"a place where the practice started",0,"A: 'began in Paris'."))],
+b:[sg("Mini-boss",ip2(P8,"a number that shows fast growth",0,"A: 'doubled in five years'.")),
+sg("Mini-boss",ip2(P8,"a criticism of how well apps teach",2,"C: 'little speaking practice'.")),
+sg("Mini-boss",ip2(P8,"a solution learners now use",3,"D: 'combine apps with conversation groups'."))]};
+Object.values(C6).flat().forEach(x=>IDX[hs(x)]=x);
+LV[5].gen=gn(C6);
+LV[6].gen=()=>shuf([C1,C2,C3,C4,C5,C6].flatMap(C=>shuf([...C.p,...C.m]).slice(0,2).map(x=>({...x,st:"Final Boss"}))));
+LV[5].idea="Step 1: decide the <mark>type</mark> of information (example, reason, result, problem, advice, number). Step 2: scan for a sentence of that type. The words will be different. Don't match topic words alone.";
+LV[5].ex="'a worry about other species' → look for <i>critics warn, can leave… without</i>. Not the paragraph that merely mentions bees.";
+LV[5].n="पहिले जानकारीको प्रकार, अनि खोज्नुहोस्। एउटै शब्द मिल्यो भन्दैमा उत्तर होइन।";
+LV[6].idea="12 questions from all six chapters. You need 8 right on the first try.";
+LV[6].ex="Use every skill: signal words, paraphrase, main idea and information types.";
+
+/* ---- BANK + TIMED + DAILY REVIEW ---- */
+document.head.insertAdjacentHTML('beforeend','<style>.opt[hidden]{display:none}</style>');
+let TM=0,TID=0;
+const gn2=C=>()=>[...shuf(C.w),...shuf([...C.p,...(C.px||[])]).slice(0,8),...shuf([...C.m,...(C.mx||[])]).slice(0,5),...C.b].map(x=>({...x}));
+C1.px=[mc("Practice","The match was delayed ___ the storm.","Fill the gap.",["because of","so","however","for example"],0,T3,"'Because of' is followed by a noun: the storm."),
+mc("Practice","Rain fell all night, ___ the river overflowed.","Fill the gap.",["so","because of","although","such as"],0,T3,"Overflowing is the result, so 'so'."),
+mc("Practice","The team lost because their best player was injured.","Which sentence has the SAME meaning?",["Their best player's injury caused the defeat.","The team's defeat caused the injury.","The injury happened after the team won."],0,T2,"Injury = cause; defeat = result.")];
+C1.mx=[mc("Mixed","","Which sentence does NOT show cause and result?",["Fewer jobs led to protests.","Tea, for example, is grown here.","Heavy fog caused delays.","The shop closed due to rent rises."],1,T3,"'For example' gives an example."),
+mc("Mixed","As a consequence, the school closed.","Tap the words that start the RESULT.",["As a consequence","the school","closed"],0,T1,"'As a consequence,' is followed by the result.")];
+C2.px=[m2("Practice","Tourists love the beaches; ___, locals complain about noise.","Fill the gap.",["however","therefore","for example","because"],0,"Wrong family","Love vs complain: contrast."),
+m2("Practice","Experts once expected sales to fall. In fact, they rose.","What is the REAL point?",["Sales rose","Sales fell","Experts were right"],0,F,"'In fact' corrects the first sentence."),
+m2("Practice","Hot countries, including Egypt and India, rarely see snow.","Which word starts the EXAMPLE?",["Hot countries","including","rarely see snow"],1,K,"'Including' introduces the examples.")];
+C2.mx=[m2("Mixed","Despite the cost, many bought it.","Which has the SAME meaning?",["Many bought it although it was costly.","Many avoided it because of the cost.","It was cheap, so many bought it."],0,"Missed paraphrase","Despite = although."),
+m2("Mixed","The road is short; nevertheless, it is dangerous.","Tap the contrast word.",["short","nevertheless","dangerous"],1,K,"'Nevertheless' = however.")];
+C3.px=[m3("Practice","","Which word is closest to 'ancient'?",["very old","very new","very big"],0,W3,"Ancient = very old."),
+m3("Practice","","Which is the ADJECTIVE form of 'danger'?",["dangerous","dangerously","endanger"],0,"Word form","danger → dangerous."),
+m3("Practice","Wages increased steadily.","Which has the SAME meaning?",["There was a steady increase in wages.","Wages decreased steadily.","Wages were steady."],0,"Missed paraphrase","increased → an increase.")];
+C3.mx=[m3("Mixed","","Which pair does NOT mean the same?",["begin – start","huge – tiny","buy – purchase"],1,"Opposite trap","Huge and tiny are opposites."),
+m3("Mixed","The ___ of the new law surprised everyone. (announce)","Choose the noun.",["announcement","announced","announcing"],0,"Word form","A noun is needed after 'The'.")];
+C4.px=[m4("Practice","The council built the library.","Which is the PASSIVE version?",["The library was built by the council.","The council was built by the library.","The library built the council."],0,PS,"The library receives the action."),
+m4("Practice","One in ten people live alone.","Which is the same?",["10% of people live alone.","90% of people live alone.","Ten people live alone."],0,NM,"One in ten = 10%."),
+m4("Practice","Crime decreased.","Which has the OPPOSITE meaning?",["Crime increased.","Crime fell.","Crime dropped."],0,OP,"Decreased vs increased.")];
+C4.mx=[m4("Mixed","Profits doubled.","Which is NOT a paraphrase?",["Profits were twice as high.","Profits halved.","Profits rose by 100%."],1,OP,"Halved is the opposite."),
+m4("Mixed","The study was funded by the government.","Which is the ACTIVE version?",["The government funded the study.","The study funded the government.","The government was funded."],0,PS,"The government is the doer.")];
+C5.px=[m5("Practice","Volcanoes destroy homes. But their ash makes soil rich, and farmers settle nearby.","Best heading?",["Volcanoes: danger and benefit","Destroyed homes","Rich soil"],0,NR,"Both sides appear."),
+m5("Practice","Wind farms are growing fast. They produce clean power, though some residents dislike the noise.","Best heading?",["Wind farms: benefits and objections","Noise","Clean power"],0,NR,"Cover both sides."),
+m5("Practice","Teenagers naturally fall asleep later. Later school starts improved grades.","Which heading is TOO BROAD?",["Later school starts help teenagers","Education","Grades in one district"],1,BR,"'Education' covers far more.")];
+C5.mx=[m5("Mixed","Learning at any age keeps the brain active. Older adults who take classes improve memory.","Which is the MAIN idea?",["Learning keeps the brain active at any age","Classes exist","Memory is bad"],0,NR,"Classes and memory are support."),
+m5("Mixed","Teenagers naturally fall asleep later. Later school starts improved grades.","Which heading is TOO NARROW?",["Later school starts help teenagers","Education","Grades in one district"],2,NR,"One district is a detail.")];
+C6.px=[sg("Practice",ip2(P8,"why people like the apps",1,"B: 'popularity… explained by short lessons'.")),sg("Practice",ip2(P7,"a reason city bees make more honey",1,"B: 'because gardens flower'.")),sg("Practice",ip2(P6,"a link between night work and illness",1,"B: 'doctors link it to… heart disease'."))];
+C6.mx=[sg("Mixed",ip2(P8,"a doubt about speaking practice",2,"C: 'little speaking practice'.")),sg("Mixed",ip2(P7,"a risk to wild bees",2,"C: 'leave wild bees without enough food'."))];
+[C1,C2,C3,C4,C5,C6].forEach((C,i)=>{[...C.px,...C.mx].forEach(x=>IDX[hs(x)]=x);LV[i].gen=gn2(C)});
+LV[6].gen=()=>shuf([C1,C2,C3,C4,C5,C6].flatMap(C=>shuf([...C.p,...C.m,...C.px,...C.mx]).slice(0,2).map(x=>({...x,st:"Final Boss"}))));
+function daily(){let top=Object.entries(S.miss).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]);
+let p=shuf(Object.values(IDX).filter(x=>x.tg&&x.tg.some(t=>t&&top.includes(t)))).slice(0,10).map(x=>({...x,st:"Review"}));
+if(p.length<4)return;p.n=p.length;LAST=daily;qz(p,0,0,{t:"Daily Review",m:"rev"},99)}
+
+/* ---- SYNONYM GYM ---- */
+let LAST=()=>0;
+const GD=`#Change & Trends|📈
+increase=rise,grow|बढ्नु
+decrease=fall,decline|घट्नु
+sharp=steep,rapid|तीव्र
+gradual=slow,steady|क्रमशः
+fluctuate=vary,go up and down|उतारचढाव हुनु
+remain=stay,continue|रहिरहनु
+stable=constant,unchanging|स्थिर
+peak=highest point,maximum|शिखर बिन्दु
+drop=dip,slip|झर्नु
+surge=jump,leap|एक्कासी वृद्धि
+slump=collapse,plunge|तीव्र गिरावट
+expand=widen,enlarge|विस्तार गर्नु
+shrink=contract,get smaller|खुम्चिनु
+shift=change,move|परिवर्तन
+#Cause & Effect|🔗
+cause=lead to,result in|कारण बन्नु
+affect=influence,impact|असर पार्नु
+result=outcome,consequence|नतिजा
+trigger=set off,spark|सुरु गराउनु
+contribute=add to,help|योगदान दिनु
+prevent=stop,avoid|रोक्नु
+promote=encourage,support|प्रवर्द्धन गर्नु
+reduce=cut,lower|घटाउनु
+boost=raise,improve|बढावा दिनु
+depend=rely on,count on|भर पर्नु
+stem=come from,originate|उत्पन्न हुनु
+owing to=because of,thanks to|को कारणले
+factor=element,component|कारक तत्व
+hinder=obstruct,hold back|बाधा पुर्‍याउनु
+#Size & Amount|📏
+huge=enormous,vast|विशाल
+tiny=minute,very small|सानो
+majority=most,bulk|बहुमत
+minority=few,small group|अल्पमत
+numerous=many,plentiful|धेरै
+scarce=rare,in short supply|दुर्लभ
+sufficient=enough,adequate|पर्याप्त
+whole=entire,complete|पूरा
+approximately=about,roughly|लगभग
+significant=considerable,notable|उल्लेखनीय
+slight=minor,small|थोरै
+dense=crowded,packed|घना
+excessive=too much,extreme|अत्यधिक
+minimal=lowest possible,bare|न्यूनतम
+#Research & Evidence|🔬
+examine=investigate,study|जाँच्नु
+suggest=indicate,imply|संकेत गर्नु
+prove=demonstrate,confirm|प्रमाणित गर्नु
+claim=argue,assert|दाबी गर्नु
+assume=suppose,presume|मान्नु
+analyse=break down,scrutinise|विश्लेषण गर्नु
+conclude=infer,deduce|निष्कर्ष निकाल्नु
+reveal=expose,uncover|खुलासा गर्नु
+estimate=guess,calculate roughly|अनुमान
+support=back,endorse|समर्थन गर्नु
+challenge=question,dispute|चुनौती दिनु
+reliable=trustworthy,dependable|भरपर्दो
+evidence=proof,data|प्रमाण
+findings=results,discoveries|निष्कर्षहरू
+#Problems & Solutions|🛠️
+problem=issue,difficulty|समस्या
+solve=resolve,fix|समाधान गर्नु
+threat=danger,risk|खतरा
+improve=enhance,upgrade|सुधार गर्नु
+tackle=deal with,address|सामना गर्नु
+obstacle=barrier,hurdle|बाधा
+urgent=pressing,critical|तत्काल
+harm=damage,injure|हानि गर्नु
+shortage=lack,deficit|अभाव
+crisis=emergency,disaster|संकट
+benefit=advantage,gain|फाइदा
+drawback=disadvantage,downside|बेफाइदा
+adopt=take up,introduce|अपनाउनु
+propose=put forward,recommend|प्रस्ताव गर्नु
+#People & Society|👥
+citizens=residents,inhabitants|नागरिक
+elderly=aged,senior|वृद्ध
+wealthy=rich,affluent|धनी
+poverty=hardship,destitution|गरिबी
+employ=hire,recruit|काममा लिनु
+migrate=relocate,move abroad|बसाइँ सर्नु
+urban=city,metropolitan|सहरी
+rural=countryside,agricultural|ग्रामीण
+society=community,public|समाज
+reform=overhaul,restructure|सुधार (नीति)
+ban=prohibit,forbid|प्रतिबन्ध लगाउनु
+permit=allow,authorise|अनुमति दिनु
+demand=requirement,need|माग
+trend=pattern,tendency|प्रवृत्ति
+#Time & Frequency|⏳
+frequent=regular,common|बारम्बार
+rarely=seldom,hardly ever|विरलै
+ancient=age-old,archaic|प्राचीन
+modern=contemporary,up to date|आधुनिक
+previously=earlier,formerly|पहिले
+currently=at present,nowadays|हाल
+eventually=finally,in the end|अन्त्यमा
+immediately=at once,instantly|तुरुन्तै
+temporary=short-term,brief|अस्थायी
+permanent=lasting,long-term|स्थायी
+initially=at first,originally|सुरुमा
+subsequently=afterwards,later|त्यसपछि
+throughout=during,all through|भरि
+simultaneously=at the same time,together|एकैसाथ
+#Quality & Opinion|💬
+essential=vital,crucial|अत्यावश्यक
+beneficial=helpful,useful|लाभदायक
+harmful=damaging,destructive|हानिकारक
+controversial=disputed,debatable|विवादास्पद
+reasonable=sensible,fair|उचित
+effective=successful,productive|प्रभावकारी
+obvious=clear,evident|स्पष्ट
+complex=complicated,intricate|जटिल
+unusual=strange,uncommon|असामान्य
+popular=widespread,well-liked|लोकप्रिय
+dangerous=risky,hazardous|खतरनाक
+consistent=uniform,unvarying|एकनासे
+ideal=perfect,best|आदर्श
+basic=fundamental,elementary|आधारभूत`;
+const TH=[];GD.split("\n").forEach(l=>{if(l[0]=="#"){let[a,e]=l.slice(1).split("|");TH.push({t:a,e,w:[]})}else{let[a,n]=l.split("|"),[w,sy]=a.split("=");TH[TH.length-1].w.push({w,s:sy.split(","),n})}});
+const today=()=>Math.floor(Date.now()/864e5);
+function sgUp(w,g){S.sg=S.sg||{};let r=S.sg[w]||{b:0,d:0};r.b=g?Math.min(r.b+1,4):1;r.d=today()+[0,1,3,7,14][r.b];S.sg[w]=r;save()}
+function gq(x,t,k){let oth=shuf(t.w.filter(y=>y.w!=x.w)),p=y=>y.s[Math.random()*y.s.length|0],a=p(x),o,q,tg;
+if(k==0){o=[a,p(oth[0]),p(oth[1])];q="Closest in meaning to “"+x.w+"”?";tg="Wrong synonym"}
+else if(k==1){o=[x.w,oth[0].w,oth[1].w];q="Which word means “"+a+"”?";tg="Wrong word"}
+else{o=[x.s[0],x.s[1]||a,p(oth[0])];q="Which does NOT mean “"+x.w+"”?";tg="Odd one out"}
+let c=k==2?2:0;return{st:"Word",q,o,c,tg:o.map((_,i)=>i==c?"":tg),why:x.w+" = "+x.s.join(", "),n:x.w+" = "+x.n,w:x.w}}
+function gstart(ti){TM=0;S.sg=S.sg||{};let d=today(),all=ti<0?TH.flatMap(t=>t.w.map(x=>({x,t}))):TH[ti].w.map(x=>({x,t:TH[ti]})),r=o=>S.sg[o.x.w];
+let pick=[...shuf(all.filter(o=>r(o)&&r(o).d<=d)),...shuf(all.filter(o=>!r(o))),...shuf(all.filter(o=>r(o)&&r(o).d>d&&r(o).b<4))].slice(0,10);
+if(!pick.length)return gym();let its=pick.map((o,i)=>gq(o.x,o.t,i%3));its.n=its.length;LAST=()=>gstart(ti);qz(its,0,0,{t:ti<0?"Due words":TH[ti].t,m:"gym"},98)}
+function gym(){S.sg=S.sg||{};let d=today(),ms=t=>t.w.filter(x=>S.sg[x.w]&&S.sg[x.w].b>=4).length,du=TH.reduce((n,t)=>n+t.w.filter(x=>S.sg[x.w]&&S.sg[x.w].d<=d).length,0),tot=TH.reduce((n,t)=>n+ms(t),0),all=TH.reduce((n,t)=>n+t.w.length,0);
+A.dataset.d='f';A.innerHTML=`<button class="btn ghost sm" id=bk>←</button><h2>📚 Synonym Gym</h2><p class=mu>${tot} of ${all} words mastered. Missed words return after 1, 3 and 7 days. Tap नेपाली after each answer to learn the word.</p><button class=btn id=du>🔁 Review due words (${du})</button>`+TH.map((t,i)=>`<button class=node data-i=${i}><span class=ic>${t.e}</span><span><b>${t.t}</b><small>${ms(t)}/${t.w.length} mastered</small></span></button>`).join("");
+$('#bk').onclick=home;$('#du').onclick=()=>{if(du)gstart(-1)};A.querySelectorAll('.node').forEach(b=>b.onclick=()=>gstart(+b.dataset.i))}
+
+/* ---- LOGIN (simple, client-side) ---- */
+document.head.insertAdjacentHTML('beforeend','<style>input{font:inherit;width:100%;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:6px 0}</style>');
+/* EDIT USERS HERE: "username":"password" (username in lowercase). The first user inherits any progress already saved on this device. */
+const USERS={"student1":"ielts123","student2":"ielts456"};
+let KEY='isg_guest',U='';
+const FRESH=()=>({xp:0,streak:0,last:'',acc:{},miss:{},lv:{},hist:{},sg:{}});
+function enter(u){U=u;KEY='isg_'+u;let d=null;try{d=localStorage.getItem(KEY);if(!d&&u==Object.keys(USERS)[0])d=localStorage.getItem('isg');localStorage.setItem('isg_user',u)}catch(e){}
+let o=null;try{o=JSON.parse(d)}catch(e){}S=Object.assign(FRESH(),o||{});save();home()}
+function logout(){try{localStorage.removeItem('isg_user')}catch(e){}U='';S=FRESH();login()}
+function login(msg){A.dataset.d='f';A.innerHTML=`<div class=card style="margin-top:10vh"><h2>🎯 IELTS Skill Gym</h2><p class=mu>Log in to continue</p><input id=lu placeholder="Username" autocapitalize=none autocorrect=off autocomplete=username><input id=lp type=password placeholder="Password" autocomplete=current-password><button class=btn id=lg>Log in</button><p id=lm style="color:var(--no);min-height:1.4em;margin:8px 0 0"></p></div>`;
+const go=()=>{let u=$('#lu').value.trim().toLowerCase(),p=$('#lp').value;if(USERS[u]!==undefined&&USERS[u]===p)enter(u);else $('#lm').textContent="Wrong username or password."};
+$('#lg').onclick=go;$('#lp').onkeydown=e=>{if(e.key=="Enter")go()}}
+{let u=null;try{u=localStorage.getItem('isg_user')}catch(e){}if(u&&USERS[u]!==undefined)enter(u);else login()}
+</script></body></html>
