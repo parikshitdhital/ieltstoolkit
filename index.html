@@ -716,22 +716,28 @@ $('#bk').onclick=home;$('#du').onclick=()=>{if(du)gstart(-1)};A.querySelectorAll
 
 /* ---- HOME BY REAL IELTS ACADEMIC READING TASK ORDER ---- */
 document.head.insertAdjacentHTML('beforeend','<style>.sec{margin:18px 0 6px;font-size:15px}.sec small{display:block;color:var(--mu);font-weight:400;font-size:12px}.tk{background:var(--card);border:1px solid var(--bd);border-radius:14px;margin:8px 0;overflow:hidden}.tk .hd{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;padding:13px;background:none;border:0;text-align:left}.tk .tt{font-weight:700}.bd{font-size:12px;color:var(--mu);white-space:nowrap}.bdy{padding:0 8px 8px}.tl{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:rgba(79,70,229,.09);border:0;border-radius:10px;padding:10px;margin:4px 0}.tl small{display:block;color:var(--mu)}.tk.lock{opacity:.6}.tk.lock .tt{filter:blur(1.4px)}.tk.lock .hd{cursor:default}</style>');
+document.head.insertAdjacentHTML('beforeend','<style>.tabs{display:flex;gap:3px;overflow-x:auto;position:sticky;top:34px;z-index:15;background:var(--bg);padding:8px 0 0;margin-top:14px;border-bottom:3px solid var(--ac);scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{flex:1 1 auto;padding:10px 6px;border:0;border-radius:10px 10px 0 0;background:var(--bd);color:var(--mu);font-weight:700;font-size:13px}.tab.on{background:var(--ac);color:#fff}#app[data-d="n"]>*{animation:none}</style>');
 const TASKS=[["Multiple choice",[2,4,"g"]],["Identifying information (True / False / Not Given)",[2,3,"g"]],["Identifying writer's views (Yes / No / Not Given)",[1,"g"]],["Matching information",[5,0,2,3],1],["Matching headings",[4,1],1],["Matching features",[5,2]],["Matching sentence endings",[0,1]],["Sentence completion",["g",2]],["Summary completion",["g",2]],["Note completion",["g",2]],["Table completion",["g",2]],["Flow-chart completion",null],["Diagram label completion",null],["Short-answer questions",null]];
-let OPEN={3:1,4:1};
+let OPEN={3:1,4:1},TAB='all';
+document.head.insertAdjacentHTML('beforeend','<style>.part{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:28px 0 10px;padding-bottom:6px;border-bottom:3px solid var(--ac);font-size:27px;font-weight:800;letter-spacing:.6px}.part small{font-size:12px;font-weight:600;letter-spacing:0;color:var(--mu)}.part.lock{opacity:.55;border-bottom-color:var(--bd)}.psub{margin:-4px 0 10px;color:var(--mu);font-size:13px}</style>');
+const part=(ic,n,sub)=>`<div class="part${sub?"":" lock"}"><span>${ic} ${n}</span>${sub?"":"<small>🔒 Coming soon</small>"}</div>${sub?`<div class=psub>${sub}</div>`:""}`;
 const lockRow=n=>`<div class="tk lock"><div class=hd><span class=tt>${n}</span><span class=bd>🔒 Coming soon</span></div></div>`;
 function home(){const w=Object.entries(S.miss).sort((a,b)=>b[1]-a[1]).slice(0,3),nw=TH.reduce((n,t)=>n+t.w.length,0),
 tl=(k,ic,t,sb)=>`<button class=tl data-k=${k}><span style="font-size:22px">${ic}</span><span><b>${t}</b><small>${sb}</small></span></button>`,
 tool=k=>k=="g"?tl("g","📚","Synonym Gym",nw+" words"):tl("l"+k,LV[k].e,LV[k].t,"⭐".repeat(S.lv[k]||0)||"Not started");
-A.dataset.d='f';
-A.innerHTML=`<div class=row><span class=mu>${U} · <a id=lo href=# style="color:var(--ac)">Log out</a></span></div><h2>IELTS Skill Gym</h2><div class=stats><div><b>${lv()}</b><span>Level</span></div><div><b>${S.xp}</b><span>XP</span></div><div><b>🔥${S.streak}</b><span>Day streak</span></div></div>
-<h3 class=sec>Practice for every task</h3><div class=card style="padding:6px">${tl("dr","🧠","Daily review",w.length?"Your top mistakes":"Make a few mistakes first")}${tl("l6","👑","Final Boss","12 mixed questions")}${tl("g","📚","Synonym Gym",nw+" words")}</div>
-${lockRow("🎧 Listening")}<h3 class=sec>📖 Reading · Academic<small>3 passages · 40 questions · 60 minutes</small></h3>`+
-TASKS.map(([n,t,core],i)=>t?`<div class=tk><button class=hd data-t=${i}><span class=tt>${i+1}. ${n}</span><span class=bd>${core?"✅ Core":"🟡 Skills"} <b class=ch>${OPEN[i]?"▲":"▼"}</b></span></button><div class=bdy ${OPEN[i]?"":"hidden"}>${t.map(tool).join("")}</div></div>`:lockRow(`${i+1}. ${n}`)).join("")+
-`${lockRow("✍️ Writing")}${lockRow("🗣️ Speaking")}<div class=card><b>Weak spots</b><br>${w.length?w.map(x=>`<span class=tag>${x[0]} ×${x[1]}</span>`).join(""):'<span class=mu>No mistakes yet.</span>'}</div><button class="btn ghost" id=bu>💾 Backup &amp; restore</button><button class="btn ghost" id=rs>Reset progress</button>`;
+A.dataset.d='n';
+const prac=`<h3 class=sec>Practice for every task</h3><div class=card style="padding:6px">${tl("dr","🧠","Daily review",w.length?"Your top mistakes":"Make a few mistakes first")}${tl("l6","👑","Final Boss","12 mixed questions")}${tl("g","📚","Synonym Gym",nw+" words")}</div>`,
+soon=n=>TAB=="all"?"":`<div class=card><p class=mu>${n} practice isn't built yet. It will appear here later.</p></div>`,
+rd=part("📖","READING","Academic · 3 passages · 40 questions · 60 minutes")+TASKS.map(([n,t,core],i)=>t?`<div class=tk><button class=hd data-t=${i}><span class=tt>${i+1}. ${n}</span><span class=bd>${core?"✅ Core":"🟡 Skills"} <b class=ch>${OPEN[i]?"▲":"▼"}</b></span></button><div class=bdy ${OPEN[i]?"":"hidden"}>${t.map(tool).join("")}</div></div>`:lockRow(`${i+1}. ${n}`)).join(""),
+SEC={l:part("🎧","LISTENING")+soon("Listening"),r:rd,w:part("✍️","WRITING")+soon("Writing"),s:part("🗣️","SPEAKING")+soon("Speaking")},
+BODY=TAB=="all"?prac+SEC.l+SEC.r+SEC.w+SEC.s:(TAB=="r"?prac:"")+SEC[TAB],
+TABS=`<div class=tabs>${[["all","All"],["l","Listening"],["r","Reading"],["w","Writing"],["s","Speaking"]].map(([k,n])=>`<button class="tab${TAB==k?" on":""}" data-tb=${k}>${n}</button>`).join("")}</div>`;
+A.innerHTML=`<div class=row><span class=mu>${U} · <a id=lo href=# style="color:var(--ac)">Log out</a></span></div><h2>IELTS Skill Gym</h2><div class=stats><div><b>${lv()}</b><span>Level</span></div><div><b>${S.xp}</b><span>XP</span></div><div><b>🔥${S.streak}</b><span>Day streak</span></div></div>`+TABS+BODY+`<div class=card><b>Weak spots</b><br>${w.length?w.map(x=>`<span class=tag>${x[0]} ×${x[1]}</span>`).join(""):'<span class=mu>No mistakes yet.</span>'}</div><button class="btn ghost" id=bu>💾 Backup &amp; restore</button><button class="btn ghost" id=st>⚙️ Settings</button>`;
+A.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{TAB=b.dataset.tb;home()});
 A.querySelectorAll('.tl').forEach(b=>b.onclick=()=>{const k=b.dataset.k;k=="g"?gym():k=="dr"?daily():lesson(+k.slice(1))});
 A.querySelectorAll('.hd[data-t]').forEach(b=>b.onclick=()=>{const i=b.dataset.t;OPEN[i]=!OPEN[i];b.nextElementSibling.hidden=!OPEN[i];b.querySelector('.ch').textContent=OPEN[i]?"▲":"▼"});
 $('#bu').onclick=bk2;$('#lo').onclick=e=>{e.preventDefault();logout()};
-$('#rs').onclick=()=>{if(RC||(RC=1,$('#rs').textContent="Tap again to confirm",0)){RC=0;S={xp:0,streak:0,last:'',acc:{},miss:{},lv:{},hist:{},sg:{},np:S.np};save();home()}}}
+$('#st').onclick=()=>settings()}
 /* ---- LOGIN (simple, client-side) ---- */
 document.head.insertAdjacentHTML('beforeend','<style>input{font:inherit;width:100%;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:6px 0}</style>');
 /* EDIT USERS HERE: "username":"password" (username in lowercase). The first user inherits any progress already saved on this device. */
@@ -752,4 +758,13 @@ const npApply=()=>{document.body.classList.toggle('nonp',S.np===false);$('#npt2'
 $('#npt2').onchange=()=>{S.np=$('#npt2').checked;save();npApply()};
 new MutationObserver(npApply).observe(A,{childList:true});
 npApply();
+
+/* ---- SETTINGS: RESET ALL (password + confirm) ---- */
+document.head.insertAdjacentHTML('beforeend','<style>.btn.dng{background:var(--no)}</style>');
+function settings(step){A.dataset.d='f';
+A.innerHTML=`<button class="btn ghost sm" id=bk>←</button><h2>⚙️ Settings</h2><div class=card><b>Reset all progress</b><p class=mu>Deletes all progress, stars, answer history and word mastery for <b>every account</b> (${Object.keys(USERS).join(", ")}) on this device. This cannot be undone.</p>`+(step==2?`<p style="color:var(--no)"><b>Last chance. Everything will be deleted.</b></p><button class="btn dng" id=yes>Yes, delete everything</button><button class="btn ghost" id=no>Cancel</button>`:`<input id=pw type=password placeholder="Enter your password" autocomplete=current-password><button class="btn dng" id=go2>Continue</button><p id=em style="color:var(--no);min-height:1.4em;margin:6px 0 0"></p>`)+`</div>`;
+$('#bk').onclick=home;
+if(step==2){$('#no').onclick=home;$('#yes').onclick=wipe}else{const ck=()=>{if($('#pw').value===USERS[U])settings(2);else $('#em').textContent="Wrong password."};$('#go2').onclick=ck;$('#pw').onkeydown=e=>{if(e.key=="Enter")ck()}}}
+function wipe(){try{Object.keys(localStorage).filter(k=>k.startsWith('isg')).forEach(k=>localStorage.removeItem(k))}catch(e){}
+U='';S=FRESH();login();$('#lm').style.color='var(--ok)';$('#lm').textContent="All progress deleted."}
 </script></body></html>
