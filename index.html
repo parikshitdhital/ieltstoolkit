@@ -144,7 +144,7 @@ const LV=[
 {t:"Final Boss",e:"👑",m:"mix",f:()=>1,idea:"Mixed questions from every skill. You need 8 of 12 right on the first try.",ex:"Use everything you learned. Good luck!",n:"सबै सीपको मिश्रित परीक्षा।"}];
 const pool=l=>l.gen?l.gen():l.m=="mix"?shuf(["sig","para","gist","info"].flatMap(k=>shuf(D[k].items).slice(0,3))):shuf(D[l.m].items.filter(l.f)).slice(0,20);
 function home(){let w=Object.entries(S.miss).sort((a,b)=>b[1]-a[1]).slice(0,3);
-A.innerHTML=`<div class=row><span class=mu>${U} · <a id=lo href=# style="color:var(--ac)">Log out</a></span></div><h2>IELTS Skill Gym</h2><div class=stats><div><b>${lv()}</b><span>Level</span></div><div><b>${S.xp}</b><span>XP</span></div><div><b>🔥${S.streak}</b><span>Day streak</span></div></div><p class=mu>Finish each step to unlock the next.</p>`+LV.map((l,i)=>{let o=i==0||S.lv[i-1],s=S.lv[i]||0;return`<button class="node${o?"":" lock"}" data-i=${i}><span class=ic>${o?l.e:"🔒"}</span><span><b>${i+1}. ${l.t}</b><small>${s?"⭐".repeat(s):o?"Tap to start":"Locked"}</small></span></button>`}).join("")+`<button class=node id=sg><span class=ic>📚</span><span><b>Synonym Gym</b><small>112 words · spaced repetition</small></span></button><button class=node id=dr><span class=ic>🧠</span><span><b>Daily review</b><small>${w.length?"10 questions from your top mistakes":"Make a few mistakes first 😄"}</small></span></button><div class=card><b>Weak spots</b><br>${w.length?w.map(x=>`<span class=tag>${x[0]} ×${x[1]}</span>`).join(""):'<span class=mu>No mistakes yet.</span>'}</div><button class="btn ghost" id=bu>💾 Backup &amp; restore</button><button class="btn ghost" id=rs>Reset progress</button>`;
+A.innerHTML=`<div class=row><span class=mu>${U} · <a id=lo href=# style="color:var(--ac)">Log out</a></span></div><h2>IELTS Skill Gym</h2><div class=stats><div><b>${lv()}</b><span>Level</span></div><div><b>${S.xp}</b><span>XP</span></div><div><b>🔥${S.streak}</b><span>Day streak</span></div></div><p class=mu>Finish each step to unlock the next.</p>`+LV.map((l,i)=>{let o=i==0||S.lv[i-1],s=S.lv[i]||0;return`<button class="node${o?"":" lock"}" data-i=${i}><span class=ic>${o?l.e:"🔒"}</span><span><b>${i+1}. ${l.t}</b><small>${s?"⭐".repeat(s):o?"Tap to start":"Locked"}</small></span></button>`}).join("")+`<button class=node id=sg><span class=ic>📚</span><span><b>Synonym Gym</b><small>${TH.reduce((n,t)=>n+t.w.length,0)} words · spaced repetition</small></span></button><button class=node id=dr><span class=ic>🧠</span><span><b>Daily review</b><small>${w.length?"10 questions from your top mistakes":"Make a few mistakes first 😄"}</small></span></button><div class=card><b>Weak spots</b><br>${w.length?w.map(x=>`<span class=tag>${x[0]} ×${x[1]}</span>`).join(""):'<span class=mu>No mistakes yet.</span>'}</div><button class="btn ghost" id=bu>💾 Backup &amp; restore</button><button class="btn ghost" id=rs>Reset progress</button>`;
 A.querySelectorAll('.node').forEach(b=>b.onclick=()=>{let i=+b.dataset.i;if(i==0||S.lv[i-1])lesson(i)});
 $('#bu').onclick=bk2;if($('#dr'))$('#dr').onclick=daily;if($('#sg'))$('#sg').onclick=gym;if($('#lo'))$('#lo').onclick=e=>{e.preventDefault();logout()};$('#rs').onclick=()=>{if(RC||(RC=1,$('#rs').textContent="Tap again to confirm",0)){RC=0;S={xp:0,streak:0,last:'',acc:{},miss:{},lv:{},hist:{}};save();home()}}}
 function lesson(i){let l=LV[i];A.innerHTML=`<button class="btn ghost sm" id=bk>←</button><div class=card><h2>${l.e} ${l.t}</h2><p>${l.idea}</p><p class=ctx>${l.ex}</p><button class="btn ghost" id=npb>नेपाली</button><div class=np id=np hidden>${l.n}</div></div><button class="btn ghost" id=tm>⏱ Timed mode (45s each): ${TM?"ON":"OFF"}</button><button class=btn id=go>Start</button>${S.hist[i]?'<button class="btn ghost" id=lr>Review last attempt</button>':''}`;
@@ -578,7 +578,127 @@ popular=widespread,well-liked|लोकप्रिय
 dangerous=risky,hazardous|खतरनाक
 consistent=uniform,unvarying|एकनासे
 ideal=perfect,best|आदर्श
-basic=fundamental,elementary|आधारभूत`;
+basic=fundamental,elementary|आधारभूत
+#Environment & Nature|🌍
+conserve=protect,preserve|संरक्षण गर्नु
+pollute=contaminate,poison|प्रदूषित गर्नु
+habitat=natural home,territory|बासस्थान
+extinct=died out,no longer existing|लोप भएको
+endangered=at risk,threatened|लोपोन्मुख
+renewable=replenishable,sustainable|नवीकरणीय
+emission=discharge,release|उत्सर्जन
+drought=dry spell,lack of rain|खडेरी
+flood=inundation,overflow|बाढी
+erosion=wearing away,degradation|कटान
+waste=rubbish,refuse|फोहोर
+resource=supply,asset|स्रोत
+harvest=crop,yield|बाली
+wildlife=fauna,animals|वन्यजन्तु
+#Health & Medicine|🏥
+cure=heal,remedy|निको पार्नु
+symptom=sign,indication|लक्षण
+diagnose=identify,detect|रोग पहिचान गर्नु
+recover=get better,recuperate|निको हुनु
+contagious=infectious,catching|सरुवा
+chronic=persistent,lingering|दीर्घकालीन
+obese=overweight,heavy|मोटो
+nutrition=nourishment,diet|पोषण
+vaccine=immunisation,jab|खोप
+fatigue=exhaustion,tiredness|थकान
+stress=pressure,strain|तनाव
+treat=care for,medicate|उपचार गर्नु
+injury=wound,trauma|चोट
+immune=resistant,protected|रोगप्रतिरोधी
+#Education & Learning|🎓
+curriculum=syllabus,course content|पाठ्यक्रम
+assess=evaluate,judge|मूल्याङ्कन गर्नु
+tutor=teacher,instructor|शिक्षक
+compulsory=mandatory,obligatory|अनिवार्य
+literacy=ability to read,reading ability|साक्षरता
+qualification=certificate,credential|योग्यता
+scholarship=grant,bursary|छात्रवृत्ति
+lecture=talk,presentation|व्याख्यान
+enrol=register,sign up|भर्ना हुनु
+graduate=finish studies,complete a degree|स्नातक गर्नु
+skill=expertise,competence|सीप
+discipline=self-control,order|अनुशासन
+acquire=gain,obtain|प्राप्त गर्नु
+comprehend=understand,grasp|बुझ्नु
+#Technology & Innovation|💻
+invent=create,devise|आविष्कार गर्नु
+automate=mechanise,computerise|स्वचालित बनाउनु
+device=gadget,appliance|उपकरण
+innovation=new idea,breakthrough|नवीनता
+obsolete=outdated,out of date|पुरानो भइसकेको
+efficient=time-saving,well-organised|कुशल
+data=information,figures|तथ्याङ्क
+network=system,web|सञ्जाल
+upgrade=update,modernise|स्तरोन्नति गर्नु
+virtual=online,digital|आभासी
+access=entry,reach|पहुँच
+capacity=volume,capability|क्षमता
+prototype=model,early version|नमुना
+surveillance=monitoring,observation|निगरानी
+#Work & Economy|💼
+income=earnings,salary|आम्दानी
+expense=cost,expenditure|खर्च
+profit=surplus,returns|नाफा
+invest=put money in,fund|लगानी गर्नु
+export=sell abroad,ship overseas|निर्यात
+import=bring in,buy from abroad|आयात
+unemployment=joblessness,lack of work|बेरोजगारी
+wage=pay,remuneration|ज्याला
+budget=spending plan,financial plan|बजेट
+consumer=customer,buyer|उपभोक्ता
+inflation=rising prices,price increase|मुद्रास्फीति
+recession=downturn,economic decline|आर्थिक मन्दी
+productivity=output,production rate|उत्पादकत्व
+industry=manufacturing,trade|उद्योग
+#Communication & Opinion|🗣️
+persuade=convince,win over|मनाउनु
+criticise=condemn,find fault with|आलोचना गर्नु
+praise=commend,applaud|प्रशंसा गर्नु
+agree=concur,consent|सहमत हुनु
+oppose=resist,object to|विरोध गर्नु
+emphasise=highlight,underline|जोड दिनु
+mention=refer to,state|उल्लेख गर्नु
+discuss=talk over,debate|छलफल गर्नु
+announce=declare,proclaim|घोषणा गर्नु
+admit=confess,acknowledge|स्वीकार गर्नु
+warn=caution,alert|चेतावनी दिनु
+insist=stand firm,be adamant|जिद्दी गर्नु
+reject=refuse,turn down|अस्वीकार गर्नु
+doubt=be sceptical,distrust|शङ्का गर्नु
+#Movement & Travel|✈️
+journey=trip,voyage|यात्रा
+commute=travel to work,daily trip|कार्यालय आवतजावत
+destination=endpoint,target|गन्तव्य
+abroad=overseas,in another country|विदेशमा
+tourist=visitor,traveller|पर्यटक
+transport=move,carry|ढुवानी गर्नु
+hasten=hurry,speed up|हतार गर्नु
+delay=postpone,hold up|ढिलो गर्नु
+arrive=reach,get to|आइपुग्नु
+depart=leave,set off|प्रस्थान गर्नु
+distant=far,remote|टाढाको
+nearby=close,adjacent|नजिकैको
+route=path,course|बाटो
+congestion=traffic jam,overcrowding|भीडभाड
+#Behaviour & Attitude|🧠
+generous=giving,kind|उदार
+selfish=self-centred,greedy|स्वार्थी
+honest=truthful,sincere|इमानदार
+ambitious=determined,driven|महत्त्वाकाङ्क्षी
+curious=inquisitive,keen to learn|जिज्ञासु
+anxious=worried,nervous|चिन्तित
+confident=self-assured,sure of oneself|आत्मविश्वासी
+cautious=careful,wary|सावधान
+creative=imaginative,inventive|सिर्जनशील
+flexible=adaptable,versatile|लचिलो
+stubborn=obstinate,headstrong|जिद्दी
+ordinary=typical,everyday|साधारण
+talented=gifted,skilled|प्रतिभाशाली
+patient=tolerant,calm|धैर्यवान`;
 const TH=[];GD.split("\n").forEach(l=>{if(l[0]=="#"){let[a,e]=l.slice(1).split("|");TH.push({t:a,e,w:[]})}else{let[a,n]=l.split("|"),[w,sy]=a.split("=");TH[TH.length-1].w.push({w,s:sy.split(","),n})}});
 const today=()=>Math.floor(Date.now()/864e5);
 function sgUp(w,g){S.sg=S.sg||{};let r=S.sg[w]||{b:0,d:0};r.b=g?Math.min(r.b+1,4):1;r.d=today()+[0,1,3,7,14][r.b];S.sg[w]=r;save()}
@@ -594,6 +714,24 @@ function gym(){S.sg=S.sg||{};let d=today(),ms=t=>t.w.filter(x=>S.sg[x.w]&&S.sg[x
 A.dataset.d='f';A.innerHTML=`<button class="btn ghost sm" id=bk>←</button><h2>📚 Synonym Gym</h2><p class=mu>${tot} of ${all} words mastered. Missed words return after 1, 3 and 7 days. <span class=npt>Tap नेपाली after each answer to learn the word.</span></p><button class=btn id=du>🔁 Review due words (${du})</button>`+TH.map((t,i)=>`<button class=node data-i=${i}><span class=ic>${t.e}</span><span><b>${t.t}</b><small>${ms(t)}/${t.w.length} mastered</small></span></button>`).join("");
 $('#bk').onclick=home;$('#du').onclick=()=>{if(du)gstart(-1)};A.querySelectorAll('.node').forEach(b=>b.onclick=()=>gstart(+b.dataset.i))}
 
+/* ---- HOME BY REAL IELTS ACADEMIC READING TASK ORDER ---- */
+document.head.insertAdjacentHTML('beforeend','<style>.sec{margin:18px 0 6px;font-size:15px}.sec small{display:block;color:var(--mu);font-weight:400;font-size:12px}.tk{background:var(--card);border:1px solid var(--bd);border-radius:14px;margin:8px 0;overflow:hidden}.tk .hd{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;padding:13px;background:none;border:0;text-align:left}.tk .tt{font-weight:700}.bd{font-size:12px;color:var(--mu);white-space:nowrap}.bdy{padding:0 8px 8px}.tl{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:rgba(79,70,229,.09);border:0;border-radius:10px;padding:10px;margin:4px 0}.tl small{display:block;color:var(--mu)}.tk.lock{opacity:.6}.tk.lock .tt{filter:blur(1.4px)}.tk.lock .hd{cursor:default}</style>');
+const TASKS=[["Multiple choice",[2,4,"g"]],["Identifying information (True / False / Not Given)",[2,3,"g"]],["Identifying writer's views (Yes / No / Not Given)",[1,"g"]],["Matching information",[5,0,2,3],1],["Matching headings",[4,1],1],["Matching features",[5,2]],["Matching sentence endings",[0,1]],["Sentence completion",["g",2]],["Summary completion",["g",2]],["Note completion",["g",2]],["Table completion",["g",2]],["Flow-chart completion",null],["Diagram label completion",null],["Short-answer questions",null]];
+let OPEN={3:1,4:1};
+const lockRow=n=>`<div class="tk lock"><div class=hd><span class=tt>${n}</span><span class=bd>🔒 Coming soon</span></div></div>`;
+function home(){const w=Object.entries(S.miss).sort((a,b)=>b[1]-a[1]).slice(0,3),nw=TH.reduce((n,t)=>n+t.w.length,0),
+tl=(k,ic,t,sb)=>`<button class=tl data-k=${k}><span style="font-size:22px">${ic}</span><span><b>${t}</b><small>${sb}</small></span></button>`,
+tool=k=>k=="g"?tl("g","📚","Synonym Gym",nw+" words"):tl("l"+k,LV[k].e,LV[k].t,"⭐".repeat(S.lv[k]||0)||"Not started");
+A.dataset.d='f';
+A.innerHTML=`<div class=row><span class=mu>${U} · <a id=lo href=# style="color:var(--ac)">Log out</a></span></div><h2>IELTS Skill Gym</h2><div class=stats><div><b>${lv()}</b><span>Level</span></div><div><b>${S.xp}</b><span>XP</span></div><div><b>🔥${S.streak}</b><span>Day streak</span></div></div>
+<h3 class=sec>Practice for every task</h3><div class=card style="padding:6px">${tl("dr","🧠","Daily review",w.length?"Your top mistakes":"Make a few mistakes first")}${tl("l6","👑","Final Boss","12 mixed questions")}${tl("g","📚","Synonym Gym",nw+" words")}</div>
+${lockRow("🎧 Listening")}<h3 class=sec>📖 Reading · Academic<small>3 passages · 40 questions · 60 minutes</small></h3>`+
+TASKS.map(([n,t,core],i)=>t?`<div class=tk><button class=hd data-t=${i}><span class=tt>${i+1}. ${n}</span><span class=bd>${core?"✅ Core":"🟡 Skills"} <b class=ch>${OPEN[i]?"▲":"▼"}</b></span></button><div class=bdy ${OPEN[i]?"":"hidden"}>${t.map(tool).join("")}</div></div>`:lockRow(`${i+1}. ${n}`)).join("")+
+`${lockRow("✍️ Writing")}${lockRow("🗣️ Speaking")}<div class=card><b>Weak spots</b><br>${w.length?w.map(x=>`<span class=tag>${x[0]} ×${x[1]}</span>`).join(""):'<span class=mu>No mistakes yet.</span>'}</div><button class="btn ghost" id=bu>💾 Backup &amp; restore</button><button class="btn ghost" id=rs>Reset progress</button>`;
+A.querySelectorAll('.tl').forEach(b=>b.onclick=()=>{const k=b.dataset.k;k=="g"?gym():k=="dr"?daily():lesson(+k.slice(1))});
+A.querySelectorAll('.hd[data-t]').forEach(b=>b.onclick=()=>{const i=b.dataset.t;OPEN[i]=!OPEN[i];b.nextElementSibling.hidden=!OPEN[i];b.querySelector('.ch').textContent=OPEN[i]?"▲":"▼"});
+$('#bu').onclick=bk2;$('#lo').onclick=e=>{e.preventDefault();logout()};
+$('#rs').onclick=()=>{if(RC||(RC=1,$('#rs').textContent="Tap again to confirm",0)){RC=0;S={xp:0,streak:0,last:'',acc:{},miss:{},lv:{},hist:{},sg:{},np:S.np};save();home()}}}
 /* ---- LOGIN (simple, client-side) ---- */
 document.head.insertAdjacentHTML('beforeend','<style>input{font:inherit;width:100%;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:6px 0}</style>');
 /* EDIT USERS HERE: "username":"password" (username in lowercase). The first user inherits any progress already saved on this device. */
