@@ -809,7 +809,7 @@ aspect=feature,facet|पक्ष
 concept=idea,notion|अवधारणा
 context=setting,background|सन्दर्भ
 criteria=standards,benchmarks|मापदण्ड
-function=purpose,role|कार्य
+function=purpose,job|कार्य
 impact=effect,consequence|प्रभाव
 principle=rule,fundamental truth|सिद्धान्त (नियम)
 process=procedure,operation|प्रक्रिया
@@ -1148,6 +1148,153 @@ Object.values(NEWSRC).flat().forEach(x=>x.nw=1);
 TH.slice(16).forEach(t=>t.w.forEach(w=>w.nw=1));
 const isNew=it=>!!it.nw&&!(it.w?(S.sg&&S.sg[it.w]):(S.seen&&S.seen[hs(it)])),newCount=k=>(NEWSRC[k]||[]).filter(isNew).length,newW=t=>t.w.filter(w=>w.nw&&!(S.sg&&S.sg[w.w])).length,gymNew=()=>TH.reduce((n,t)=>n+newW(t),0);
 const poolN=l=>{const a=pool(l);return[...a.filter(isNew),...a.filter(x=>!isNew(x))]};
+/* ---- PACK 10: 5 more words in every Synonym Gym category (flagged NEW) ---- */
+const GD2=`#Change & Trends
+climb=ascend,go up|चढ्नु
+plummet=nosedive,crash|एक्कासी झर्नु
+plateau=level out,flatten|स्थिर तह
+rebound=bounce back,recover|पुनः उक्लिनु
+accelerate=speed up,quicken|तीव्र हुनु
+#Cause & Effect
+induce=bring about,produce|उत्पन्न गराउनु
+foster=nurture,cultivate|हुर्काउनु
+undermine=weaken,damage|कमजोर पार्नु
+ensure=guarantee,make certain|सुनिश्चित गर्नु
+derive=draw from,get from|बाट लिनु
+#Size & Amount
+abundant=ample,copious|प्रशस्त
+negligible=trivial,insignificant|नगण्य
+substantial=sizeable,hefty|ठूलो परिमाणको
+broad=wide,extensive|फराकिलो
+marginal=barely noticeable,borderline|सीमान्त
+#Research & Evidence
+verify=check,validate|प्रमाणित गर्नु
+bias=prejudice,unfairness|पूर्वाग्रह
+objective=impartial,unbiased|निष्पक्ष
+survey=questionnaire,opinion study|सर्वेक्षण
+cite=quote,refer to|उद्धृत गर्नु
+#Problems & Solutions
+dilemma=quandary,predicament|दुविधा
+mitigate=lessen,ease|कम गर्नु
+overcome=defeat,get past|पार गर्नु
+alleviate=relieve,soothe|राहत दिनु
+flaw=defect,fault|कमजोरी
+#People & Society
+generation=age group,cohort|पुस्ता
+immigrant=newcomer,settler|आप्रवासी
+household=family unit,home|घरपरिवार
+lifestyle=way of life,habits|जीवनशैली
+welfare=wellbeing,benefit|कल्याण
+#Time & Frequency
+occasionally=sometimes,now and then|कहिलेकाहीँ
+constantly=continually,all the time|निरन्तर
+annual=yearly,once a year|वार्षिक
+lengthy=long,prolonged|लामो
+ongoing=continuing,in progress|जारी रहेको
+#Quality & Opinion
+outstanding=excellent,exceptional|उत्कृष्ट
+inadequate=insufficient,poor|अपर्याप्त
+trivial=unimportant,petty|तुच्छ
+genuine=authentic,real|असली
+tedious=boring,dull|नीरस
+#Environment & Nature
+ecosystem=natural community,living system|पारिस्थितिक प्रणाली
+biodiversity=variety of life,species variety|जैविक विविधता
+recycle=reuse,reprocess|पुनःप्रयोग गर्नु
+deforestation=forest clearance,tree felling|वन विनाश
+fertile=rich,fruitful|उर्वर
+#Health & Medicine
+surgery=operation,medical procedure|शल्यक्रिया
+prescribe=recommend medicine,order|औषधि सिफारिस गर्नु
+dose=amount,measure|मात्रा
+epidemic=outbreak,widespread illness|महामारी
+allergy=sensitivity,hypersensitivity|एलर्जी
+#Education & Learning
+revise=review,go over|दोहोर्याउनु
+pupil=student,learner|विद्यार्थी
+plagiarism=copying,cheating|नक्कल
+assignment=task,piece of work|गृहकार्य
+dissertation=thesis,long essay|शोधपत्र
+#Technology & Innovation
+algorithm=set of rules,step-by-step method|एल्गोरिदम
+software=programs,applications|सफ्टवेयर
+hardware=equipment,machinery|हार्डवेयर
+encrypt=encode,scramble|कोड बनाउनु
+download=transfer,save a copy|डाउनलोड गर्नु
+#Work & Economy
+employer=boss,company owner|रोजगारदाता
+retire=stop working,leave the workforce|अवकाश लिनु
+promotion=advancement,step up|पदोन्नति
+commerce=trading,business activity|वाणिज्य
+bankrupt=insolvent,broke|दिवालिया
+#Communication & Opinion
+complain=protest,grumble|गुनासो गर्नु
+apologise=say sorry,express regret|माफी माग्नु
+convey=communicate,express|पुर्याउनु
+clarify=explain,make clear|स्पष्ट पार्नु
+summarise=outline,sum up|सारांश गर्नु
+#Movement & Travel
+wander=roam,stroll|डुल्नु
+rush=dash,race|हतारिनु
+luggage=baggage,bags|सामान
+passenger=rider,person travelling|यात्रु
+cross=go across,traverse|पार गर्नु
+#Behaviour & Attitude
+polite=courteous,well-mannered|विनम्र
+rude=impolite,disrespectful|असभ्य
+loyal=faithful,devoted|वफादार
+arrogant=conceited,haughty|घमण्डी
+humble=modest,unassuming|नम्र
+#Government & Law
+parliament=legislature,assembly|संसद
+constitution=founding law,basic law|संविधान
+verdict=judgement,ruling|फैसला
+trial=court hearing,legal case|मुद्दा सुनुवाइ
+democracy=rule by the people,representative government|लोकतन्त्र
+#Culture & Media
+journalist=reporter,correspondent|पत्रकार
+documentary=factual film,non-fiction programme|वृत्तचित्र
+masterpiece=great work,classic|उत्कृष्ट कृति
+censor=suppress,restrict|सेन्सर गर्नु
+viral=widely shared,spreading fast|तीव्र फैलिने
+#Science & Discovery
+chemical=substance,compound|रासायनिक पदार्थ
+genetic=hereditary,inherited|वंशाणुगत
+orbit=circle,revolve|परिक्रमा गर्नु
+conduct=carry out,perform|सञ्चालन गर्नु
+prediction=forecast,projection|भविष्यवाणी
+#Housing & Cities
+apartment=flat,unit|फ्ल्याट
+dwelling=residence,abode|बसोबास
+municipal=civic,local government|नगरपालिका सम्बन्धी
+boulevard=avenue,wide street|चौडा सडक
+plaza=square,open space|चौर
+#Business & Management
+invoice=bill,statement|बिल
+audit=inspection,examination|लेखापरीक्षण
+stakeholder=interested party,investor|सरोकारवाला
+delegate=assign,hand over|जिम्मा दिनु
+monopoly=sole control,exclusive control|एकाधिकार
+#Emotions & Reactions
+cheerful=happy,upbeat|हँसिलो
+gloomy=miserable,depressed|उदास
+terrified=petrified,horrified|आतङ्कित
+irritated=annoyed,exasperated|झिँज्याएको
+hopeful=optimistic,encouraged|आशावादी
+#Verbs of Action
+construct=build,erect|निर्माण गर्नु
+emerge=appear,come out|देखा पर्नु
+hesitate=pause,waver|हिचकिचाउनु
+abandon=desert,give up|त्याग्नु
+adapt=adjust,modify|अनुकूलन गर्नु
+#Ideas & Concepts
+framework=structure,outline|रूपरेखा
+perspective=viewpoint,outlook|दृष्टिकोण
+phenomenon=occurrence,event|घटना
+dimension=measurement,extent|आयाम
+sequence=order,series|क्रम`;
+TH.forEach(t=>t.w.forEach(w=>{w.nw=0}));
+{let cur=null;GD2.split("\n").forEach(l=>{if(l[0]=="#"){cur=TH.find(t=>t.t==l.slice(1))}else{const[a,n]=l.split("|"),[w,sy]=a.split("=");cur.w.push({w,s:sy.split(","),n,nw:1})}})}
 /* ---- LOGIN (simple, client-side) ---- */
 document.head.insertAdjacentHTML('beforeend','<style>input{font:inherit;width:100%;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:6px 0}</style>');
 /* EDIT USERS HERE: "username":"password" (username in lowercase). The first user inherits any progress already saved on this device. */
