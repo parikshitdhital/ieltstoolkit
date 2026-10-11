@@ -733,8 +733,8 @@ w2:{t:"Task 2 · Essay",d:"You write an essay of at least 250 words, in about 40
 s1:{t:"Part 1 · Introduction and interview",d:"The examiner asks you about yourself and familiar topics such as home, work, studies and hobbies.",h:["Answer the question directly, then add a reason or an example.","Aim for two or three sentences, not one word and not a speech.","Do not memorise scripts; speak naturally.","If you do not understand, politely ask the examiner to repeat."],s:["Talking about familiar topics","Extending answers with reasons and examples","Present and past tenses","Natural pronunciation"]},
 s2:{t:"Part 2 · Long turn",d:"You get a task card and one minute to prepare. Then you speak on the topic for one to two minutes, and the examiner may ask one or two follow-up questions.",h:["Use the one minute to jot keywords for each point on the card.","Follow the card's points as your structure.","Keep talking until the examiner stops you.","If you run out of ideas, add detail: feelings, reasons, a short story."],s:["Telling a story or describing in order","Past, present and future tenses","Descriptive vocabulary","Keeping fluent without long pauses"]},
 s3:{t:"Part 3 · Discussion",d:"The examiner asks more abstract questions linked to the Part 2 topic, and discusses ideas with you.",h:["Give an opinion, then a reason, then an example.","Compare the past and the present, or different groups of people.","Speculate with 'might', 'could' and 'probably'.","If you need time, use phrases like 'That's an interesting question'."],s:["Expressing and justifying opinions","Comparatives and conditionals","Hedging and speculating","Linking ideas smoothly","Wider academic vocabulary"]}};
-const gbody=g=>`<p>${g.d}</p><b>How to attempt</b><ol>${g.h.map(x=>`<li>${x}</li>`).join("")}</ol><b>Skills to learn</b><ul>${g.s.map(x=>`<li>${x}</li>`).join("")}</ul>${g.lv!=null?`<button class=btn data-lv=${g.lv}>▶ Practice</button>`:g.wr?`<button class=btn data-wr=${g.wr}>✍️ Start writing</button>`:'<p class=mu>🔒 Practice drills for this are coming soon.</p>'}`;
-const gcard=(k,t)=>`<div class=tk><button class=hd data-t=g${k}><span class=tt>${t||GUIDE[k].t}</span><span class=bd>${GUIDE[k].lv!=null||GUIDE[k].wr?'✅ Practice':'📖 Guide'} <b class=ch>${OPEN["g"+k]?"▲":"▼"}</b></span></button><div class="bdy gd" ${OPEN["g"+k]?"":"hidden"}>${gbody(GUIDE[k])}</div></div>`;
+const gbody=g=>`<p>${g.d}</p><b>How to attempt</b><ol>${g.h.map(x=>`<li>${x}</li>`).join("")}</ol><b>Skills to learn</b><ul>${g.s.map(x=>`<li>${x}</li>`).join("")}</ul>${g.ls?`<button class=btn data-ls=${g.ls}>🎧 Practice this part</button>`:g.lv!=null?`<button class=btn data-lv=${g.lv}>▶ Practice</button>`:g.wr?`<button class=btn data-wr=${g.wr}>✍️ Start writing</button>`:'<p class=mu>🔒 Practice drills for this are coming soon.</p>'}`;
+const gcard=(k,t)=>`<div class=tk><button class=hd data-t=g${k}><span class=tt>${t||GUIDE[k].t}</span><span class=bd>${GUIDE[k].lv!=null||GUIDE[k].wr||GUIDE[k].ls?'✅ Practice':'📖 Guide'} <b class=ch>${OPEN["g"+k]?"▲":"▼"}</b></span></button><div class="bdy gd" ${OPEN["g"+k]?"":"hidden"}>${gbody(GUIDE[k])}</div></div>`;
 const sect=(ic,n,f,ks)=>part(ic,n)+`<div class=psub>${f}</div>`+ks.map(k=>gcard(k)).join("");
 document.head.insertAdjacentHTML('beforeend','<style>.part{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:28px 0 10px;padding-bottom:6px;border-bottom:3px solid var(--ac);font-size:27px;font-weight:800;letter-spacing:.6px}.part small{font-size:12px;font-weight:600;letter-spacing:0;color:var(--mu)}.part.lock{opacity:.55;border-bottom-color:var(--bd)}.psub{margin:-4px 0 10px;color:var(--mu);font-size:13px}</style>');
 const part=(ic,n,sub)=>`<div class="part${sub?"":" lock"}"><span>${ic} ${n}</span>${sub?"":"<small>🔒 Coming soon</small>"}</div>${sub?`<div class=psub>${sub}</div>`:""}`;
@@ -746,12 +746,12 @@ A.dataset.d='n';
 const prac=`<h3 class=sec>Practice for every task</h3><div class=card style="padding:6px">${tl("dr","🧠","Daily review",w.length?"Your top mistakes":"Make a few mistakes first")}${tl("l6","👑","Final Boss","12 mixed questions")}${tl("l10","📄","Full passage 1","Beavers · 14 questions")}${tl("l13","📄","Full passage 2","Vertical farming · 14 questions")}${tl("l14","📄","Full passage 3","Wearable devices · 14 questions")}${tl("g","📚","Synonym Gym",nw+" words")}</div>`,
 soon=n=>TAB=="all"?"":`<div class=card><p class=mu>${n} practice isn't built yet. It will appear here later.</p></div>`,
 rd=part("📖","READING","Academic · 3 passages · 40 questions · 60 minutes")+TASKS.map(([n,t,core],i)=>Array.isArray(t)?`<div class=tk><button class=hd data-t=${i}><span class=tt>${i+1}. ${n}</span><span class=bd>${core?"✅ Core":"🟡 Skills"} <b class=ch>${OPEN[i]?"▲":"▼"}</b></span></button><div class=bdy ${OPEN[i]?"":"hidden"}>${t.map(tool).join("")}</div></div>`:gcard(t,`${i+1}. ${n}`)).join(""),
-SEC={l:sect("🎧","LISTENING","4 parts · 10 questions each · about 30 minutes (+10 min to transfer answers on paper) · audio played once",["l1","l2","l3","l4"]),r:rd,w:sect("✍️","WRITING","2 tasks · 60 minutes · Task 2 counts twice as much as Task 1",["w1","w2"]),s:sect("🗣️","SPEAKING","3 parts · 11–14 minutes · face-to-face with an examiner · recorded",["s1","s2","s3"])},
+SEC={l:part("🎧","LISTENING")+`<div class=psub>4 parts · 10 questions each · about 30 minutes (+10 min to transfer answers on paper) · audio played once</div><button class=btn data-ls=all style="margin:6px 0 10px">🎧 Full Listening Test 1 · 40 questions</button>`+["l1","l2","l3","l4"].map(k=>gcard(k)).join(""),r:rd,w:sect("✍️","WRITING","2 tasks · 60 minutes · Task 2 counts twice as much as Task 1",["w1","w2"]),s:sect("🗣️","SPEAKING","3 parts · 11–14 minutes · face-to-face with an examiner · recorded",["s1","s2","s3"])},
 BODY=TAB=="all"?prac+SEC.l+SEC.r+SEC.w+SEC.s:(TAB=="r"?prac:"")+SEC[TAB],
 TABS=`<div class=tabs>${[["all","All"],["l","Listening"],["r","Reading"],["w","Writing"],["s","Speaking"]].map(([k,n])=>`<button class="tab${TAB==k?" on":""}" data-tb=${k}>${n}</button>`).join("")}</div>`;
 A.innerHTML=`<div class=row><span class=mu>${U} · <a id=lo href=# style="color:var(--ac)">Log out</a></span></div><h2>IELTS Skill Gym</h2><div class=stats><div><b>${lv()}</b><span>Level</span></div><div><b>${S.xp}</b><span>XP</span></div><div><b>🔥${S.streak}</b><span>Day streak</span></div></div>`+TABS+BODY+`<div class=card><b>Weak spots</b><br>${w.length?w.map(x=>`<span class=tag>${x[0]} ×${x[1]}</span>`).join(""):'<span class=mu>No mistakes yet.</span>'}</div><button class="btn ghost" id=bu>💾 Backup &amp; restore</button><button class="btn ghost" id=st>⚙️ Settings</button>`;
 A.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{TAB=b.dataset.tb;home()});
-A.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>lesson(+b.dataset.lv));A.querySelectorAll('[data-wr]').forEach(b=>b.onclick=()=>wrScreen(b.dataset.wr));A.querySelectorAll('.tl').forEach(b=>b.onclick=()=>{const k=b.dataset.k;k=="g"?gym():k=="dr"?daily():lesson(+k.slice(1))});
+A.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>lesson(+b.dataset.lv));A.querySelectorAll('[data-wr]').forEach(b=>b.onclick=()=>wrScreen(b.dataset.wr));A.querySelectorAll('[data-ls]').forEach(b=>b.onclick=()=>lsStart(b.dataset.ls));A.querySelectorAll('.tl').forEach(b=>b.onclick=()=>{const k=b.dataset.k;k=="g"?gym():k=="dr"?daily():lesson(+k.slice(1))});
 A.querySelectorAll('.hd[data-t]').forEach(b=>b.onclick=()=>{const i=b.dataset.t;OPEN[i]=!OPEN[i];b.nextElementSibling.hidden=!OPEN[i];b.querySelector('.ch').textContent=OPEN[i]?"▲":"▼"});
 $('#bu').onclick=bk2;$('#lo').onclick=e=>{e.preventDefault();logout()};
 $('#st').onclick=()=>settings()}
@@ -925,6 +925,88 @@ const bd=rb5([j.ta,j.cc,j.lr,j.gra]);S.wlog=(S.wlog||[]).concat({d:today(),k:key
 const nm=t1?["Task Achievement","Coherence & Cohesion","Lexical Resource","Grammatical Range & Accuracy"]:["Task Response","Coherence & Cohesion","Lexical Resource","Grammatical Range & Accuracy"];
 $('#wf').innerHTML=`<div class=card><h2>Estimated band: ${bd}</h2><p class=mu>${j.words} words. This is an AI estimate for practice, not an official score. Your goal is 6.5.</p>${[j.ta,j.cc,j.lr,j.gra].map((v,i)=>`<div class=wb><span>${nm[i]}</span><b>${v}</b></div>`).join("")}</div><div class=card><b>Summary</b><p>${j.summary}</p>${j.strengths.length?`<b>Good points</b><ul>${j.strengths.map(x=>`<li>${x}</li>`).join("")}</ul>`:""}<b>Improve this</b>${j.improvements.map(i=>`<p>• ${i.issue}<br><i>“${i.example}”</i><br>✅ ${i.fix}</p>`).join("")}${j.tip?`<p>💡 ${j.tip}</p>`:""}${j.nepali&&S.np!==false?`<div class=np style="display:block">${j.nepali}</div>`:""}</div><button class=btn id=wa>Write another</button>`;
 $('#wa').onclick=()=>wrScreen(key);$('#wf').scrollIntoView({behavior:'smooth'})}catch(x){bz=0;$('#ws').disabled=false;$('#wf').innerHTML='<div class=card>AI marking is not available right now. Your text is still in the box. Try again in a minute.</div>'}}}
+/* ---- LISTENING: full test, 4 parts, audio via the phone's voice ---- */
+document.head.insertAdjacentHTML('beforeend','<style>.lq{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px;margin:8px 0}.li{display:inline-block!important;width:130px!important;padding:6px!important;margin:0 4px!important}.lo{display:block;padding:6px 2px}.lq input[type=radio]{width:auto;margin:0 8px 0 0;padding:0}.lr{padding:6px 0;border-bottom:1px solid var(--bd)}.lr.ok{color:var(--ok)}.lr.no{color:var(--no)}</style>');
+const LB=[[39,9],[37,8.5],[35,8],[32,7.5],[30,7],[26,6.5],[23,6],[18,5.5],[16,5],[13,4.5],[11,4],[8,3.5],[6,3],[4,2.5]],lband=n=>(LB.find(x=>n>=x[0])||[0,"below 2.5"])[1];
+const sp=t=>t.trim().split("\n").map(l=>{const i=l.indexOf("|");return[+l.slice(0,i),l.slice(i+1)]});
+const LSP=[
+{t:"Part 1 · Booking at a sports centre",lim:"Write ONE WORD AND/OR A NUMBER for each answer.",
+l:sp(`0|Good morning, Riverside Sports Centre. How can I help?
+1|Hello, I'd like to join the centre.
+0|Certainly. Can I take your name?
+1|It's Maria Jensen. That's J, E, N, S, E, N.
+0|Thank you. And your address?
+1|Forty-five Oak Lane.
+0|Which membership would you like? Standard is thirty-five pounds a month and includes the gym. Premium is fifty-five pounds a month and also includes the swimming pool.
+1|I'll take the premium, please. I'd like to start on the twelfth of May.
+0|Fine. And your phone number?
+1|Zero seven nine five four, three three two one.
+0|Do you have any health problems we should know about?
+1|Yes, I have a bad knee.
+0|Noted. Classes are free for members. Which would you like to try?
+1|Yoga, I think.
+0|Yoga is on Tuesdays at six thirty.
+1|Perfect. And where is the car park?
+0|Behind the main building, next to the tennis courts.
+0|One last thing: please bring a photo ID and proof of address.`),
+q:[[1,"Name: Maria ___","Jensen"],[2,"Address: ___ Oak Lane","45"],[3,"Premium membership: £___ a month","55"],[4,"Start date: ___ May","12",["12th","twelfth","twelve"]],[5,"Phone number: ___","07954 3321",["079543321"]],[6,"Health problem: bad ___","knee"],[7,"Class: ___","yoga"],[8,"Day of class: ___","Tuesday",["tuesdays"]],[9,"The car park is next to the ___ courts","tennis"],[10,"Bring a ___ ID","photo"]]},
+{t:"Part 2 · Community garden talk",lim:"Questions 11, 14, 16, 19: choose the correct letter. Others: write NO MORE THAN TWO WORDS AND/OR A NUMBER.",
+l:sp(`0|Welcome to Greenfield Community Garden. I'll explain how it works. The garden opened ten years ago on land that was once a car park. Today about eighty families rent a plot.
+0|Each plot costs twenty pounds a year, and tools are provided free.
+0|The garden is open every day, but the gate closes at dusk in winter and at nine o'clock in summer.
+0|Most people grow vegetables, but we also have a small orchard.
+0|Our biggest event is the harvest festival in September, when we sell vegetables to raise money. The money is used to buy seeds and to repair the water tank.
+0|If you would like a plot, there is a waiting list of about three months. To apply, please speak to Tom Hadley in the shed by the entrance.
+0|Children are welcome but must be supervised by an adult. Finally, please do not use chemical sprays. The garden is completely organic.`),
+q:[[11,"Before it was a garden, the land was",["a school","a car park","a farm"],1],[12,"A plot costs £___ a year","20",["twenty"]],[13,"In summer the gate closes at ___ o'clock","9",["nine"]],[14,"As well as vegetables, the garden has",["an orchard","a greenhouse","a café"],0],[15,"The harvest festival is in ___","September"],[16,"The festival money pays for",["staff wages","seeds and repairs","new land"],1],[17,"The waiting time for a plot is about ___","three months",["3 months"]],[18,"To apply, speak to Tom Hadley in the ___","shed"],[19,"Children must be",["kept at home","supervised","given gloves"],1],[20,"Gardeners must not use ___ sprays","chemical"]]},
+{t:"Part 3 · Students and a tutor",lim:"Choose the correct letter, A, B or C.",
+l:sp(`0|So, how is your survey project going?
+1|Quite well. We've asked a hundred students about disposable cups. Most of them said they would use a reusable cup if it were cheaper.
+2|I was surprised that only a few of them knew about the cup discount already.
+0|That might be because the discount isn't advertised. Have you decided how to present your results?
+1|We planned a poster, but Ben thinks a short video would be better.
+2|Yes, more people would watch it. But the problem is time. The editing would take at least two weeks.
+0|Then perhaps a poster with a QR code that links to a short clip.
+1|That's a good compromise. Also, our sample was mostly first-year students. Is that a problem?
+0|It limits your conclusions. You should mention it in your report rather than ignore it.
+2|Should we interview the cafe manager too?
+0|Definitely. Her figures on cup sales would make your argument stronger.
+1|The deadline is the fifteenth. Can we hand in a draft before that?
+0|Send me an outline by next Friday, and I'll comment.
+2|Great. We aren't sure how long the report should be.
+0|Around two thousand words, including the references.
+1|Thanks. We'll start writing this weekend.`),
+q:[[21,"Most students said they would use a reusable cup if",["it were cheaper","it were bigger","the café gave them one"],0],[22,"Ben was surprised that",["so many students ignored the survey","few students knew about the discount","the survey was so long"],1],[23,"For presenting the results, Ben prefers",["a poster","a video","a report"],1],[24,"The problem with the video is",["cost","time","equipment"],1],[25,"The tutor suggests",["a poster with a QR code","skipping the results","hiring an editor"],0],[26,"About the mostly first-year sample, the tutor says they should",["ignore it","mention it in the report","interview more first-years"],1],[27,"The tutor wants them to interview the manager because",["her figures will strengthen the argument","she chose the topic","it replaces the survey"],0],[28,"The tutor wants an outline",["next Friday","on the fifteenth","tomorrow"],0],[29,"The report should be about",["1,000 words","2,000 words","3,000 words"],1],[30,"The students will start writing",["this weekend","after the deadline","next month"],0]]},
+{t:"Part 4 · Lecture on urban foxes",lim:"Write NO MORE THAN TWO WORDS AND/OR A NUMBER for each answer.",
+l:sp(`0|Today I'll talk about urban foxes. Foxes began moving into British cities in the nineteen thirties, when new suburbs with large gardens offered plenty of food.
+0|A typical city fox weighs about five kilograms, around a quarter less than a countryside fox.
+0|Surveys suggest that their main food source is rubbish bins and pet food left outside, but they also eat insects and fruit.
+0|Contrary to popular belief, foxes rarely attack people. They are shy and are mainly active at night.
+0|Their numbers vary. In London there are about ten thousand.
+0|A fox's territory is usually small, often only one square kilometre.
+0|Many people dislike foxes because of the noise. In winter, foxes make screaming calls to find a mate.
+0|Councils have tried several methods to reduce conflict. Chemical repellents have little effect, whereas fences around gardens work well.
+0|The best advice for residents is to keep food waste in closed containers.
+0|Finally, researchers now believe that foxes help to control rats.`),
+q:[[31,"Foxes began entering cities in the ___","1930s",["the 1930s","nineteen thirties","the nineteen thirties"]],[32,"A city fox weighs about ___ kg","5",["five"]],[33,"Main food: rubbish bins and ___ left outside","pet food"],[34,"Foxes are mainly active at ___","night"],[35,"Number of foxes in London: about ___","10,000",["10000","ten thousand"]],[36,"A territory is often one ___ kilometre","square"],[37,"Screaming calls are heard in ___","winter"],[38,"Gardens are best protected by ___","fences"],[39,"Food waste should be kept in ___ containers","closed"],[40,"Foxes may help control ___","rats"]]}];
+const nzl=x=>nz0(String(x).replace(/[£$]/g,"")),lsOk=(q,v)=>Array.isArray(q[2])?+v===q[3]:[q[2],...(q[3]||[])].some(a=>nzl(a)==nzl(v)&&nzl(v));
+function lsSpeak(lines,done){const ss=window.speechSynthesis;if(!ss||!window.SpeechSynthesisUtterance){done(false);return}ss.cancel();
+const vs=(ss.getVoices()||[]).filter(v=>/^en/i.test(v.lang)),va=vs.find(v=>/GB/i.test(v.lang))||vs[0],vb=vs.find(v=>v!==va)||va,pt=[1,1.1,.8],vc=[va,vb,va];let i=0;
+const next=()=>{if(i>=lines.length){done(true);return}const[l,t]=lines[i++],u=new SpeechSynthesisUtterance(t);if(vc[l])u.voice=vc[l];u.pitch=pt[l]||1;u.rate=.92;u.lang=(u.voice&&u.voice.lang)||'en-GB';u.onend=next;u.onerror=next;ss.speak(u)};next()}
+const lsQ=q=>Array.isArray(q[2])?`<div class=lq><b>${q[0]}</b> ${q[1]}${q[2].map((o,k)=>`<label class=lo><input type=radio name=r${q[0]} value=${k}> ${"ABC"[k]}  ${o}</label>`).join("")}</div>`:`<div class=lq><b>${q[0]}</b> ${q[1].replace("___",`<input class=li data-n=${q[0]} autocapitalize=none autocorrect=off spellcheck=false>`)}</div>`;
+function lsStart(sel){lsPrep({parts:sel=="all"?[0,1,2,3]:[+sel-1],i:0,res:[]})}
+function lsStop(){try{window.speechSynthesis&&window.speechSynthesis.cancel()}catch(e){}}
+function lsPrep(st){const P=LSP[st.parts[st.i]];A.dataset.d='f';
+A.innerHTML=`<button class="btn ghost sm" id=bk>←</button><h2>🎧 ${P.t}</h2><div class=card><p class=mu>${P.lim}<br>You will hear the recording <b>once only</b>. Take 30 seconds to read the questions, then press Start. You can write answers while you listen.</p><button class=btn id=lsp>▶ Start audio (plays once)</button><p id=lss class=mu></p></div>${P.q.map(lsQ).join("")}<button class=btn id=lsd disabled>Finish this part</button>`;
+$('#bk').onclick=()=>{lsStop();home()};
+$('#lsp').onclick=()=>{$('#lsp').disabled=true;$('#lss').textContent="🔊 Playing… listen carefully.";lsSpeak(P.l,ok=>{$('#lss').textContent=ok?"✅ Audio finished. Check your answers, then tap Finish.":"Audio isn't available on this device. Finish the part and read the transcript.";$('#lsd').disabled=false})};
+$('#lsd').onclick=()=>{lsStop();const rs=P.q.map(q=>{const v=Array.isArray(q[2])?((A.querySelector('input[name=r'+q[0]+']:checked')||{}).value??""):(A.querySelector('.li[data-n="'+q[0]+'"]')||{}).value||"";return{q,v,ok:v!==""&&lsOk(q,v)}});lsRes(st,P,rs)}}
+function lsRes(st,P,rs){const sc=rs.filter(r=>r.ok).length;st.res=st.res.concat(rs);S.xp+=sc*2;S.llog=(S.llog||[]).concat({d:today(),p:st.parts[st.i]+1,s:sc}).slice(-40);save();
+rs.filter(r=>!r.ok).forEach(r=>{S.miss['Listening']=(S.miss['Listening']||0)+1});save();
+const ans=r=>Array.isArray(r.q[2])?"ABC"[r.q[3]]+" "+r.q[2][r.q[3]]:r.q[2],you=r=>r.v===""?"(blank)":Array.isArray(r.q[2])?"ABC"[+r.v]+" "+r.q[2][+r.v]:r.v;
+A.dataset.d='f';A.innerHTML=`<div class=card><h2>${P.t}</h2><p style="font-size:30px;margin:4px">${sc}/10</p><p class=mu>One mark per correct answer, no marks taken off for wrong answers.</p></div><div class=card>${rs.map(r=>`<div class="lr ${r.ok?'ok':'no'}">${r.ok?'✅':'❌'} <b>${r.q[0]}</b> ${r.ok?ans(r):`you: ${you(r)} → <b>${ans(r)}</b>`}</div>`).join("")}</div><details class=card><summary><b>Transcript</b></summary><p>${P.l.map(l=>l[1]).join("<br><br>")}</p></details>`+(st.i+1<st.parts.length?`<button class=btn id=ln>Next part →</button>`:"")+(st.parts.length==4&&st.i==3?(()=>{const tot=st.res.filter(r=>r.ok).length;return`<div class=card><h2>Total: ${tot}/40</h2><p>Estimated Listening band: <b>${lband(tot)}</b></p><p class=mu>This uses the usual raw-score table. Real tests vary a little. Your goal is about 26 correct for band 6.5.</p></div>`})():"")+`<button class="btn ghost" id=lh>Back to Listening</button>`;
+if($('#ln'))$('#ln').onclick=()=>{st.i++;lsPrep(st)};$('#lh').onclick=()=>{TAB='l';home()}}
+GUIDE.l1.ls=1;GUIDE.l2.ls=2;GUIDE.l3.ls=3;GUIDE.l4.ls=4;
 /* ---- LOGIN (simple, client-side) ---- */
 document.head.insertAdjacentHTML('beforeend','<style>input{font:inherit;width:100%;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:6px 0}</style>');
 /* EDIT USERS HERE: "username":"password" (username in lowercase). The first user inherits any progress already saved on this device. */
