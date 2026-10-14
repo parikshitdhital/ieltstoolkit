@@ -13,5 +13,5 @@ module.exports = async (req, res) => {
   let ok = false;
   users.split(",").forEach(pair => { const i = pair.indexOf(":"); if (i < 1) return; const name = pair.slice(0, i).trim().toLowerCase(), pw = pair.slice(i + 1).trim(); if (name === u && eq(pw, p)) ok = true; });
   if (!ok) { await new Promise(r => setTimeout(r, 600)); return res.status(401).json({ error: "Wrong username or password" }); }
-  return res.status(200).json({ user: u, token: sign({ u, exp: Date.now() + 30 * 864e5 }, secret) });
+  return res.status(200).json({ user: u, now: Date.now(), token: sign({ u, exp: Date.now() + 30 * 864e5 }, secret) });
 };
