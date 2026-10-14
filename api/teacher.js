@@ -9,6 +9,12 @@ module.exports = async (req, res) => {
   const key = process.env.TEACHER_KEY; if (!key || !RURL() || !RTOK()) return res.status(500).json({ error: "Server not configured" });
   const given = req.headers["x-teacher-key"] || "";
   if (!eq(given, key)) { await new Promise(r => setTimeout(r, 600)); return res.status(401).json({ error: "Wrong key" }); }
+  if (req.query && req.query.check) {
+    const env = { TRACK_SECRET: !!process.env.TRACK_SECRET, APP_USERS: !!process.env.APP_USERS, TEACHER_KEY: true, REDIS_URL: !!RURL(), REDIS_TOKEN: !!RTOK() };
+    let rs = "not configured", n = null;
+    if (RURL() && RTOK()) { try { rs = (await redis(["PING"])) === "PONG" ? "ok" : "unexpected reply"; if (rs === "ok") n = ((await redis(["SMEMBERS", "users"])) || []).length; } catch (e) { rs = "failed: " + String(e.message).slice(0, 80); } }
+    return res.status(200).json({ env, redis: rs, loginUsers: (process.env.APP_USERS || "").split(",").filter(x => x.indexOf(":") > 0).length, recordedStudents: n });
+  }
   try {
     const users = (await redis(["SMEMBERS", "users"])) || [], students = [];
     for (const u of users.slice(0, 100)) { const raw = await redis(["GET", "rec:" + u]); if (!raw) continue; const r = JSON.parse(raw); const days = {}; Object.keys(r.days).sort().slice(-14).forEach(k => days[k] = r.days[k]); students.push({ u, seen: r.seen, snap: r.snap, days }); }
