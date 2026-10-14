@@ -1296,31 +1296,47 @@ dimension=measurement,extent|आयाम
 sequence=order,series|क्रम`;
 TH.forEach(t=>t.w.forEach(w=>{w.nw=0}));
 {let cur=null;GD2.split("\n").forEach(l=>{if(l[0]=="#"){cur=TH.find(t=>t.t==l.slice(1))}else{const[a,n]=l.split("|"),[w,sy]=a.split("=");cur.w.push({w,s:sy.split(","),n,nw:1})}})}
-/* ---- ACTIVITY TRACKING (counts and minutes only; sent to /api/track) ---- */
-let TOK='',PW='',LASTI=Date.now(),QT=Date.now(),LSPLAY=0;
-const TR={opens:0,secs:0,qs:0,rq:0,correct:0,es:0,fast:0};
+/* ---- ACTIVITY TRACKING: offline-safe (counts and minutes only; queued in the phone, sent when online) ---- */
+let SID='',SST=0,TOK='',LASTI=Date.now(),QT=Date.now(),LSPLAY=0,SK=0,LF=Date.now();
+const TR={opens:0,secs:0,qs:0,rq:0,correct:0,es:0,fast:0},QK='isg_q',tnow=()=>Date.now()+SK;
 ['pointerdown','keydown','touchstart','scroll','input'].forEach(e=>addEventListener(e,()=>{LASTI=Date.now()},{passive:true,capture:true}));
 setInterval(()=>{if(typeof U!=='undefined'&&U&&document.visibilityState=='visible'&&(Date.now()-LASTI<60000||LSPLAY)){TR.secs+=5;try{localStorage.setItem('isg_seen',Date.now())}catch(e){}}},5000);
 const trkSnap=()=>({xp:S.xp,streak:S.streak,stars:Object.values(S.lv||{}).reduce((a,b)=>a+b,0),words:Object.values(S.sg||{}).filter(r=>r.b>=4).length,miss:Object.entries(S.miss||{}).sort((a,b)=>b[1]-a[1]).slice(0,5)});
-async function flush(beacon){if(!TOK||!U)return;const d={...TR};if(!Object.values(d).some(v=>v))return;Object.keys(TR).forEach(k=>TR[k]=0);const body=JSON.stringify({token:TOK,d,snap:trkSnap()});
+const qLoad=()=>{try{return JSON.parse(localStorage.getItem(QK)||'[]')}catch(e){return[]}},qSave=q=>{try{localStorage.setItem(QK,JSON.stringify(q.slice(-300)))}catch(e){}};
+function bank(){if(typeof U==='undefined'||!U)return;const d={...TR};if(!Object.values(d).some(v=>v))return;Object.keys(TR).forEach(k=>TR[k]=0);
+const now=tnow(),q=qLoad(),last=q[q.length-1];
+if(last&&!last.lock&&last.sid===SID&&last.u===U){Object.keys(d).forEach(k=>last.d[k]=(last.d[k]||0)+d[k]);last.to=now}
+else q.push({rid:Date.now().toString(36)+Math.random().toString(36).slice(2,6),u:U,sid:SID,st:SST,from:LF,to:now,d});
+LF=now;qSave(q)}
+async function flush(beacon){bank();if(!TOK||typeof U==='undefined'||!U)return;const q=qLoad(),mine=q.filter(r=>r.u===U);if(!mine.length)return;mine.forEach(r=>{r.lock=1});qSave(q);
+const body=JSON.stringify({token:TOK,recs:mine.slice(0,beacon?120:300).map(({u,lock,...r})=>r),snap:trkSnap()});
 if(beacon&&navigator.sendBeacon){navigator.sendBeacon('/api/track',new Blob([body],{type:'text/plain'}));return}
-try{const r=await fetch('/api/track',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true});if(r.status==401){TOK='';return}if(!r.ok)throw 0}catch(e){Object.keys(d).forEach(k=>TR[k]+=d[k])}}
-setInterval(()=>flush(false),60000);addEventListener('visibilitychange',()=>{if(document.visibilityState=='hidden')flush(true)});addEventListener('pagehide',()=>flush(true));
+try{const r=await fetch('/api/track',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:body.length<60000});if(r.status==401){TOK='';return}if(!r.ok)throw 0;
+try{const j=await r.json();if(j&&j.now){SK=j.now-Date.now();localStorage.setItem('isg_sk',SK)}}catch(e){}
+const ids=new Set(mine.map(r=>r.rid));qSave(qLoad().filter(r=>!ids.has(r.rid)))}catch(e){}}
+setInterval(bank,15000);setInterval(()=>flush(false),60000);addEventListener('online',()=>flush(false));
+addEventListener('visibilitychange',()=>{if(document.visibilityState=='hidden')flush(true)});addEventListener('pagehide',()=>flush(true));
+/* password: only a salted hash is kept on the device (for offline login); the real password lives in Vercel */
+async function pwHash(u,p,salt){const t=salt+':'+u+':'+p;try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){let h=5381;for(const c of t)h=((h<<5)+h+c.charCodeAt(0))|0;return'x'+h}}
+async function pwStore(u,p){try{const salt=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('isg_pw_'+u,JSON.stringify({s:salt,h:await pwHash(u,p,salt)}))}catch(e){}}
+async function pwVerify(u,p){try{const r=JSON.parse(localStorage.getItem('isg_pw_'+u)||'null');if(r)return r.h===await pwHash(u,p,r.s);
+const x=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({u,p})});if(x.ok){await pwStore(u,p);return true}}catch(e){}return false}
 /* ---- LOGIN (simple, client-side) ---- */
 document.head.insertAdjacentHTML('beforeend','<style>input{font:inherit;width:100%;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:6px 0}</style>');
 /* EDIT USERS HERE: "username":"password" (username in lowercase). The first user inherits any progress already saved on this device. */
-const USERS={"student":"123456"};
+const USERS={};   /* no passwords are kept in this file any more */
 let KEY='isg_guest',U='';
 const FRESH=()=>({xp:0,streak:0,last:'',acc:{},miss:{},lv:{},hist:{},sg:{}});
-function enter(u){U=u;KEY='isg_'+u;let d=null;try{d=localStorage.getItem(KEY);if(!d&&u==Object.keys(USERS)[0])d=localStorage.getItem('isg_student1')||localStorage.getItem('isg');localStorage.setItem('isg_user',u)}catch(e){}
-let o=null;try{o=JSON.parse(d)}catch(e){}S=Object.assign(FRESH(),o||{});save();try{const k=JSON.parse(localStorage.getItem('isg_tok')||'null');TOK=k&&k.u===u?k.t:''}catch(e){TOK=''}try{const ls=+(localStorage.getItem('isg_seen')||0);if(!ls||Date.now()-ls>1800000)TR.opens++}catch(e){}setTimeout(()=>flush(false),3000);home()}
+function enter(u){U=u;KEY='isg_'+u;let d=null;try{d=localStorage.getItem(KEY);if(!d&&u==='student')d=localStorage.getItem('isg_student1')||localStorage.getItem('isg');localStorage.setItem('isg_user',u)}catch(e){}
+let o=null;try{o=JSON.parse(d)}catch(e){}S=Object.assign(FRESH(),o||{});save();try{const k=JSON.parse(localStorage.getItem('isg_tok')||'null');TOK=k&&k.u===u?k.t:''}catch(e){TOK=''}try{SK=+(localStorage.getItem('isg_sk')||0);const ls=+(localStorage.getItem('isg_seen')||0);let sid=localStorage.getItem('isg_sid');if(!ls||!sid||Date.now()-ls>1800000){sid=Date.now().toString(36)+Math.random().toString(36).slice(2,6);SST=tnow();TR.opens++;localStorage.setItem('isg_sid',sid);localStorage.setItem('isg_sst',SST)}else SST=+localStorage.getItem('isg_sst')||tnow();SID=sid;LF=tnow();localStorage.setItem('isg_seen',Date.now())}catch(e){}setTimeout(()=>flush(false),3000);home()}
 function logout(){flush(false);try{localStorage.removeItem('isg_user');localStorage.removeItem('isg_tok')}catch(e){}TOK='';U='';S=FRESH();login()}
 function login(msg){A.dataset.d='f';A.innerHTML=`<div class=card style="margin-top:10vh"><h2>🎯 IELTS Skill Gym</h2><p class=mu>Log in to continue</p><input id=lu placeholder="Username" autocapitalize=none autocorrect=off autocomplete=username><input id=lp type=password placeholder="Password" autocomplete=current-password><button class=btn id=lg>Log in</button><p id=lm style="color:var(--no);min-height:1.4em;margin:8px 0 0"></p></div>`;
-const go=async()=>{let u=$('#lu').value.trim().toLowerCase(),p=$('#lp').value;if(!u||!p)return;$('#lm').textContent='Checking…';let res=null;try{const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({u,p})});if(r.status==401){$('#lm').textContent='Wrong username or password.';return}if(r.ok)res=await r.json()}catch(e){}
-if(res&&res.token){PW=p;try{localStorage.setItem('isg_tok',JSON.stringify({u:res.user||u,t:res.token}))}catch(e){}enter(res.user||u);return}
-if(USERS[u]!==undefined&&USERS[u]===p){PW=p;try{localStorage.removeItem('isg_tok')}catch(e){}enter(u)}else $('#lm').textContent='Wrong username or password.'};
+const go=async()=>{let u=$('#lu').value.trim().toLowerCase(),p=$('#lp').value;if(!u||!p)return;$('#lm').textContent='Checking…';let res=null;
+try{const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({u,p})});if(r.status==401){$('#lm').textContent='Wrong username or password.';return}if(r.ok)res=await r.json()}catch(e){}
+if(res&&res.token){try{localStorage.setItem('isg_tok',JSON.stringify({u:res.user||u,t:res.token}));if(res.now)localStorage.setItem('isg_sk',res.now-Date.now())}catch(e){}await pwStore(res.user||u,p);enter(res.user||u);return}
+const had=!!localStorage.getItem('isg_pw_'+u);if(had&&await pwVerify(u,p)){enter(u)}else $('#lm').textContent=had?'Wrong username or password.':'Cannot reach the server. The first login needs internet.'};
 $('#lg').onclick=go;$('#lp').onkeydown=e=>{if(e.key=="Enter")go()}}
-{let u=null,tk=null;try{u=localStorage.getItem('isg_user');tk=localStorage.getItem('isg_tok')}catch(e){}if(u&&(USERS[u]!==undefined||tk))enter(u);else login()}
+{let u=null,tk=null;try{u=localStorage.getItem('isg_user');tk=localStorage.getItem('isg_tok')}catch(e){}if(u&&tk)enter(u);else login()}
 
 /* ---- NEPALI HELP TOGGLE ---- */
 document.head.insertAdjacentHTML('beforeend','<style>#topbar{position:sticky;top:0;z-index:20;display:flex;justify-content:flex-end;max-width:560px;margin:0 auto;padding:8px 14px 0;background:var(--bg)}.sw{display:flex;align-items:center;gap:8px;font-weight:700;cursor:pointer}.sw input{position:absolute;opacity:0;width:0;height:0;padding:0;margin:0;border:0}.sw i{width:44px;height:24px;border-radius:12px;background:var(--bd);position:relative;transition:.2s;display:block}.sw i::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}.sw input:checked+i{background:var(--ac)}.sw input:checked+i::after{left:22px}body.nonp #npb,body.nonp .np,body.nonp .npt{display:none!important}</style>');
@@ -1332,9 +1348,9 @@ npApply();
 /* ---- SETTINGS: RESET ALL (password + confirm) ---- */
 document.head.insertAdjacentHTML('beforeend','<style>.btn.dng{background:var(--no)}</style>');
 function settings(step){A.dataset.d='f';
-A.innerHTML=`<button class="btn ghost sm" id=bk>←</button><h2>⚙️ Settings</h2><div class=card><label class=sw>🤖 AI check<input type=checkbox id=aict ${S.ai===false?"":"checked"}><i></i></label><p class=mu>When a typed answer doesn't match exactly, an AI checks it and explains. Needs internet.</p></div><div class=card><b>Reset all progress</b><p class=mu>Deletes all progress, stars, answer history and word mastery for <b>every account</b> (${Object.keys(USERS).join(", ")}) on this device. This cannot be undone.</p>`+(step==2?`<p style="color:var(--no)"><b>Last chance. Everything will be deleted.</b></p><button class="btn dng" id=yes>Yes, delete everything</button><button class="btn ghost" id=no>Cancel</button>`:`<input id=pw type=password placeholder="Enter your password" autocomplete=current-password><button class="btn dng" id=go2>Continue</button><p id=em style="color:var(--no);min-height:1.4em;margin:6px 0 0"></p>`)+`</div>`;
+A.innerHTML=`<button class="btn ghost sm" id=bk>←</button><h2>⚙️ Settings</h2><div class=card><label class=sw>🤖 AI check<input type=checkbox id=aict ${S.ai===false?"":"checked"}><i></i></label><p class=mu>When a typed answer doesn't match exactly, an AI checks it and explains. Needs internet.</p></div><div class=card><b>Reset all progress</b><p class=mu>Deletes all progress, stars, answer history and word mastery for <b>every account</b> on this device. This cannot be undone.</p>`+(step==2?`<p style="color:var(--no)"><b>Last chance. Everything will be deleted.</b></p><button class="btn dng" id=yes>Yes, delete everything</button><button class="btn ghost" id=no>Cancel</button>`:`<input id=pw type=password placeholder="Enter your password" autocomplete=current-password><button class="btn dng" id=go2>Continue</button><p id=em style="color:var(--no);min-height:1.4em;margin:6px 0 0"></p>`)+`</div>`;
 $('#bk').onclick=home;$('#aict').onchange=()=>{S.ai=$('#aict').checked;save()};
-if(step==2){$('#no').onclick=home;$('#yes').onclick=wipe}else{const ck=()=>{if($('#pw').value===(PW||USERS[U]))settings(2);else $('#em').textContent="Wrong password."};$('#go2').onclick=ck;$('#pw').onkeydown=e=>{if(e.key=="Enter")ck()}}}
+if(step==2){$('#no').onclick=home;$('#yes').onclick=wipe}else{const ck=async()=>{$('#em').textContent='Checking…';if(await pwVerify(U,$('#pw').value))settings(2);else $('#em').textContent="Wrong password."};$('#go2').onclick=ck;$('#pw').onkeydown=e=>{if(e.key=="Enter")ck()}}}
 function wipe(){try{Object.keys(localStorage).filter(k=>k.startsWith('isg')).forEach(k=>localStorage.removeItem(k))}catch(e){}
 U='';S=FRESH();login();$('#lm').style.color='var(--ok)';$('#lm').textContent="All progress deleted."}
 </script></body></html>
