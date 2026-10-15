@@ -28,7 +28,7 @@ h2{margin:6px 0}.mu{color:var(--mu);font-size:14px}.row{display:flex;justify-con
 const $=s=>document.querySelector(s),A=$('#app');
 let S=null;try{S=JSON.parse(localStorage.getItem('isg'))}catch(e){}
 S=S||{xp:0,streak:0,last:'',acc:{},miss:{}};
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const save=()=>{try{S.ts=Date.now();localStorage.setItem(KEY,JSON.stringify(S));window.PDIRTY=1}catch(e){}};
 const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
 const PT="Info Hunter passage";
 const INFO=`<p class=ctx><b>A</b> In 2010, a group in Detroit turned empty lots into vegetable gardens. Within five years, over 1,400 such gardens were feeding local families.<br><b>B</b> Gardens also bring neighbours together. Residents who once never spoke now share tools and recipes.<br><b>C</b> Yet there are problems. Soil in old industrial areas can contain lead, so it must be tested before anything is planted.<br><b>D</b> Experts suggest that cities should offer free soil testing and cheap land to gardeners.</p>`;
@@ -1322,6 +1322,28 @@ async function pwStore(u,p){try{const salt=Math.random().toString(36).slice(2)+D
 async function pwVerify(u,p){try{const r=JSON.parse(localStorage.getItem('isg_pw_'+u)||'null');if(r)return r.h===await pwHash(u,p,r.s);
 const x=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({u,p})});if(x.ok){await pwStore(u,p);return true}}catch(e){}return false}
 const lvSub=k=>{const st='⭐'.repeat(S.lv[k]||0),a=(S.lq||{})[k]||((S.hist||{})[k]||[]).length,b=(S.lb||{})[k];return(st||(a?'In progress':'Not started'))+(a?` · ${a} answered`:'')+(b?` · best ${b[0]}/${b[1]}`:'')};
+/* ---- CLOUD PROGRESS: saved to the student's account, merged safely across devices ---- */
+let PV=0,PBUSY=0;window.PDIRTY=0;
+const mxN=(x,y)=>Math.max(x||0,y||0),pk=(o,p,f)=>{const r={...(o||{})};Object.keys(p||{}).forEach(k=>{r[k]=(k in r)?f(r[k],p[k]):p[k]});return r};
+function mergeS(a,b){const m={...a};m.xp=mxN(a.xp,b.xp);m.gq=mxN(a.gq,b.gq);
+const ta=Date.parse(a.last)||0,tb=Date.parse(b.last)||0;if(tb>ta||(tb==ta&&(b.streak||0)>(a.streak||0))){m.streak=b.streak||0;m.last=b.last||''}
+m.lv=pk(a.lv,b.lv,mxN);m.lq=pk(a.lq,b.lq,mxN);m.miss=pk(a.miss,b.miss,mxN);m.lb=pk(a.lb,b.lb,(x,y)=>x[0]/x[1]>=y[0]/y[1]?x:y);
+m.sg=pk(a.sg,b.sg,(x,y)=>x.b>y.b||(x.b==y.b&&x.d>=y.d)?x:y);m.seen=pk(a.seen,b.seen,()=>1);m.hist=pk(a.hist,b.hist,(x,y)=>x.length>=y.length?x:y);m.acc=pk(a.acc,b.acc,(x,y)=>x[1]>=y[1]?x:y);
+const un=(x,y,n)=>{const s=new Set(),o=[];[...(x||[]),...(y||[])].forEach(e=>{const k=JSON.stringify(e);if(!s.has(k)){s.add(k);o.push(e)}});return o.sort((p,q)=>(p.d||0)-(q.d||0)).slice(-n)};
+m.wlog=un(a.wlog,b.wlog,30);m.llog=un(a.llog,b.llog,40);
+if((b.ts||0)>(a.ts||0))['np','ty','ai'].forEach(k=>{if(k in b)m[k]=b[k]});m.ts=Math.max(a.ts||0,b.ts||0);return m}
+const cloudCopy=()=>{const c={...S};delete c.wdr;return c};
+const syncLabel=()=>{const t=+(localStorage.getItem('isg_psync')||0);return TOK?(t?'Last saved to your account: '+(Math.max(0,Math.round((Date.now()-t)/60000))<2?'just now':Math.round((Date.now()-t)/60000)+' min ago')+'. Your progress follows your login to any phone.':'Not saved to your account yet. Connect to the internet.'):'Not available: log out and log in again with internet.'};
+const pcall=(op,extra,keep)=>fetch('/api/progress',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:TOK,op,...extra}),keepalive:!!keep});
+async function pushCloud(tries,keep){if(!TOK||!U)return false;if((tries||0)>2)return false;const r=await pcall('put',{base:PV,data:cloudCopy()},keep&&JSON.stringify(cloudCopy()).length<55000);
+if(r.status==409){const j=await r.json();PV=j.v;if(j.data){S=mergeS(S,j.data);save()}return pushCloud((tries||0)+1,keep)}
+if(r.status==401){TOK='';return false}if(!r.ok)throw 0;const j=await r.json();PV=j.v;window.PDIRTY=0;try{localStorage.setItem('isg_psync',Date.now())}catch(e){}return true}
+async function pullSync(force){if(!TOK||!U||PBUSY||(!navigator.onLine&&!force))return;PBUSY=1;try{const r=await pcall('get',{});if(r.status==401){TOK='';return}if(!r.ok)throw 0;const j=await r.json();PV=j.v||0;
+if(j.data){const m=mergeS(S,j.data);if(JSON.stringify(m)!==JSON.stringify(S)){S=m;save();if($('.tabs'))home()}}
+await pushCloud(0,false)}catch(e){}finally{PBUSY=0}}
+setInterval(()=>{if(window.PDIRTY&&TOK&&U&&!PBUSY){PBUSY=1;pushCloud(0,false).catch(()=>{}).finally(()=>{PBUSY=0})}},90000);
+addEventListener('online',()=>pullSync());
+addEventListener('visibilitychange',()=>{if(document.visibilityState=='hidden'&&window.PDIRTY&&TOK&&U&&!PBUSY)pushCloud(0,true).catch(()=>{})});
 /* ---- LOGIN (simple, client-side) ---- */
 document.head.insertAdjacentHTML('beforeend','<style>input{font:inherit;width:100%;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:6px 0}</style>');
 /* EDIT USERS HERE: "username":"password" (username in lowercase). The first user inherits any progress already saved on this device. */
@@ -1329,8 +1351,8 @@ const USERS={};   /* no passwords are kept in this file any more */
 let KEY='isg_guest',U='';
 const FRESH=()=>({xp:0,streak:0,last:'',acc:{},miss:{},lv:{},hist:{},sg:{}});
 function enter(u){U=u;KEY='isg_'+u;let d=null;try{d=localStorage.getItem(KEY);if(!d&&u==='student')d=localStorage.getItem('isg_student1')||localStorage.getItem('isg');localStorage.setItem('isg_user',u)}catch(e){}
-let o=null;try{o=JSON.parse(d)}catch(e){}S=Object.assign(FRESH(),o||{});save();try{const k=JSON.parse(localStorage.getItem('isg_tok')||'null');TOK=k&&k.u===u?k.t:''}catch(e){TOK=''}try{SK=+(localStorage.getItem('isg_sk')||0);const ls=+(localStorage.getItem('isg_seen')||0);let sid=localStorage.getItem('isg_sid');if(!ls||!sid||Date.now()-ls>1800000){sid=Date.now().toString(36)+Math.random().toString(36).slice(2,6);SST=tnow();TR.opens++;localStorage.setItem('isg_sid',sid);localStorage.setItem('isg_sst',SST)}else SST=+localStorage.getItem('isg_sst')||tnow();SID=sid;LF=tnow();localStorage.setItem('isg_seen',Date.now())}catch(e){}setTimeout(()=>flush(false),3000);home()}
-function logout(){flush(false);try{localStorage.removeItem('isg_user');localStorage.removeItem('isg_tok')}catch(e){}TOK='';U='';S=FRESH();login()}
+let o=null;try{o=JSON.parse(d)}catch(e){}S=Object.assign(FRESH(),o||{});save();try{const k=JSON.parse(localStorage.getItem('isg_tok')||'null');TOK=k&&k.u===u?k.t:''}catch(e){TOK=''}try{SK=+(localStorage.getItem('isg_sk')||0);const ls=+(localStorage.getItem('isg_seen')||0);let sid=localStorage.getItem('isg_sid');if(!ls||!sid||Date.now()-ls>1800000){sid=Date.now().toString(36)+Math.random().toString(36).slice(2,6);SST=tnow();TR.opens++;localStorage.setItem('isg_sid',sid);localStorage.setItem('isg_sst',SST)}else SST=+localStorage.getItem('isg_sst')||tnow();SID=sid;LF=tnow();localStorage.setItem('isg_seen',Date.now())}catch(e){}PV=0;setTimeout(()=>flush(false),3000);setTimeout(pullSync,800);home()}
+function logout(){flush(false);if(window.PDIRTY&&TOK&&U)pushCloud(0,true).catch(()=>{});try{localStorage.removeItem('isg_user');localStorage.removeItem('isg_tok')}catch(e){}TOK='';U='';S=FRESH();login()}
 function login(msg){A.dataset.d='f';A.innerHTML=`<div class=card style="margin-top:10vh"><h2>🎯 IELTS Skill Gym</h2><p class=mu>Log in to continue</p><input id=lu placeholder="Username" autocapitalize=none autocorrect=off autocomplete=username><input id=lp type=password placeholder="Password" autocomplete=current-password><button class=btn id=lg>Log in</button><p id=lm style="color:var(--no);min-height:1.4em;margin:8px 0 0"></p></div>`;
 const go=async()=>{let u=$('#lu').value.trim().toLowerCase(),p=$('#lp').value;if(!u||!p)return;$('#lm').textContent='Checking…';let res=null;
 try{const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({u,p})});if(r.status==401){$('#lm').textContent='Wrong username or password.';return}if(r.ok)res=await r.json()}catch(e){}
@@ -1349,9 +1371,10 @@ npApply();
 /* ---- SETTINGS: RESET ALL (password + confirm) ---- */
 document.head.insertAdjacentHTML('beforeend','<style>.btn.dng{background:var(--no)}</style>');
 function settings(step){A.dataset.d='f';
-A.innerHTML=`<button class="btn ghost sm" id=bk>←</button><h2>⚙️ Settings</h2><div class=card><label class=sw>🤖 AI check<input type=checkbox id=aict ${S.ai===false?"":"checked"}><i></i></label><p class=mu>When a typed answer doesn't match exactly, an AI checks it and explains. Needs internet.</p></div><div class=card><b>Reset all progress</b><p class=mu>Deletes all progress, stars, answer history and word mastery for <b>every account</b> on this device. This cannot be undone.</p>`+(step==2?`<p style="color:var(--no)"><b>Last chance. Everything will be deleted.</b></p><button class="btn dng" id=yes>Yes, delete everything</button><button class="btn ghost" id=no>Cancel</button>`:`<input id=pw type=password placeholder="Enter your password" autocomplete=current-password><button class="btn dng" id=go2>Continue</button><p id=em style="color:var(--no);min-height:1.4em;margin:6px 0 0"></p>`)+`</div>`;
-$('#bk').onclick=home;$('#aict').onchange=()=>{S.ai=$('#aict').checked;save()};
+A.innerHTML=`<button class="btn ghost sm" id=bk>←</button><h2>⚙️ Settings</h2><div class=card><b>☁️ Progress backup</b><p class=mu id=syn>${syncLabel()}</p><button class="btn ghost" id=sy>Sync now</button></div><div class=card><label class=sw>🤖 AI check<input type=checkbox id=aict ${S.ai===false?"":"checked"}><i></i></label><p class=mu>When a typed answer doesn't match exactly, an AI checks it and explains. Needs internet.</p></div><div class=card><b>Reset all progress</b><p class=mu>Deletes all progress, stars, answer history and word mastery on this device <b>and the saved cloud copy</b>. This cannot be undone.</p>`+(step==2?`<p style="color:var(--no)"><b>Last chance. Everything will be deleted.</b></p><button class="btn dng" id=yes>Yes, delete everything</button><button class="btn ghost" id=no>Cancel</button>`:`<input id=pw type=password placeholder="Enter your password" autocomplete=current-password><button class="btn dng" id=go2>Continue</button><p id=em style="color:var(--no);min-height:1.4em;margin:6px 0 0"></p>`)+`</div>`;
+$('#bk').onclick=home;$('#aict').onchange=()=>{S.ai=$('#aict').checked;save()};$('#sy').onclick=async()=>{$('#syn').textContent='Syncing…';await pullSync(true);$('#syn').textContent=syncLabel()};
 if(step==2){$('#no').onclick=home;$('#yes').onclick=wipe}else{const ck=async()=>{$('#em').textContent='Checking…';if(await pwVerify(U,$('#pw').value))settings(2);else $('#em').textContent="Wrong password."};$('#go2').onclick=ck;$('#pw').onkeydown=e=>{if(e.key=="Enter")ck()}}}
-function wipe(){try{Object.keys(localStorage).filter(k=>k.startsWith('isg')).forEach(k=>localStorage.removeItem(k))}catch(e){}
-U='';S=FRESH();login();$('#lm').style.color='var(--ok)';$('#lm').textContent="All progress deleted."}
+async function wipe(){if(TOK&&U){try{const r=await fetch('/api/progress',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:TOK,op:'del'})});if(!r.ok)throw 0}catch(e){A.innerHTML='<button class="btn ghost sm" id=bk>←</button><div class=card><b>Could not delete the saved cloud copy</b><p class=mu>Connect to the internet and try again. Nothing was deleted yet.</p></div>';$('#bk').onclick=home;return}}
+try{Object.keys(localStorage).filter(k=>k.startsWith('isg')).forEach(k=>localStorage.removeItem(k))}catch(e){}
+U='';S=FRESH();TOK='';login();$('#lm').style.color='var(--ok)';$('#lm').textContent="All progress deleted."}
 </script></body></html>
