@@ -1344,6 +1344,138 @@ await pushCloud(0,false)}catch(e){}finally{PBUSY=0}}
 setInterval(()=>{if(window.PDIRTY&&TOK&&U&&!PBUSY){PBUSY=1;pushCloud(0,false).catch(()=>{}).finally(()=>{PBUSY=0})}},90000);
 addEventListener('online',()=>pullSync());
 addEventListener('visibilitychange',()=>{if(document.visibilityState=='hidden'&&window.PDIRTY&&TOK&&U&&!PBUSY)pushCloud(0,true).catch(()=>{})});
+/* ---- PACK 11: new questions in every category (flagged NEW) ---- */
+const GD3=`#Change & Trends
+soar=skyrocket,shoot up|आकाशिनु
+dwindle=diminish,taper off|घट्दै जानु
+escalate=intensify,mount|चर्कनु
+#Cause & Effect
+provoke=stir up,incite|उक्साउनु
+stimulate=spur,activate|उत्प्रेरित गर्नु
+underlie=lie behind,form the basis of|आधार बन्नु
+#Size & Amount
+tremendous=immense,colossal|ठुलो
+meagre=scanty,paltry|अपुग
+moderate=middling,medium|मध्यम
+#Research & Evidence
+conclusive=decisive,definitive|निर्णायक
+preliminary=initial,exploratory|प्रारम्भिक
+anomaly=irregularity,oddity|असामान्यता
+#Problems & Solutions
+setback=reversal,hitch|धक्का
+remedy=solution,antidote|उपाय
+bottleneck=hold-up,blockage|अवरोध
+#People & Society
+inequality=disparity,unfairness|असमानता
+diversity=variety,mix|विविधता
+urbanisation=city growth,move to cities|सहरीकरण
+#Time & Frequency
+sporadic=occasional,irregular|छिटपुट
+perpetual=never-ending,eternal|अनन्त
+shortly=soon,before long|छिट्टै
+#Quality & Opinion
+superb=magnificent,splendid|उत्कृष्ट
+flawed=defective,imperfect|त्रुटिपूर्ण
+worthwhile=valuable,rewarding|सार्थक
+#Environment & Nature
+wetland=marsh,swamp|सिमसार
+pesticide=insecticide,crop spray|कीटनाशक
+glacier=ice mass,frozen river|हिमनदी
+#Health & Medicine
+therapy=treatment,remedial care|उपचार पद्धति
+hygiene=cleanliness,sanitation|सरसफाइ
+ailment=illness,complaint|रोग
+#Education & Learning
+tuition=coaching,lessons|ट्युसन
+pedagogy=teaching method,education theory|शिक्षण विधि
+peer=classmate,fellow student|सहपाठी
+#Technology & Innovation
+artificial=man-made,synthetic|कृत्रिम
+bandwidth=data capacity,connection speed|ब्यान्डविथ
+interface=connection point,user screen|इन्टरफेस
+#Work & Economy
+redundancy=job loss,layoff|जागिर गुम्नु
+freelance=self-employed,independent|स्वतन्त्र रूपमा काम गर्ने
+subsidy=financial aid,state support|अनुदान
+#Communication & Opinion
+imply=hint,insinuate|संकेत दिनु
+urge=press,push|आग्रह गर्नु
+remark=comment,observe|टिप्पणी गर्नु
+#Movement & Travel
+pilgrimage=holy journey,sacred trip|तीर्थयात्रा
+expedition=trek,exploration|अभियान
+detour=diversion,roundabout route|वैकल्पिक बाटो
+#Behaviour & Attitude
+diligent=hard-working,industrious|मेहनती
+reluctant=unwilling,hesitant|अनिच्छुक
+sociable=outgoing,friendly|मिलनसार
+#Government & Law
+amend=revise,alter|संशोधन गर्नु
+lawsuit=legal action,court case|मुद्दा
+bureaucracy=red tape,administration|कर्मचारीतन्त्र
+#Culture & Media
+tabloid=popular newspaper,gossip paper|ट्याब्लोइड
+bestseller=top seller,hit book|धेरै बिक्ने पुस्तक
+subtitle=caption,on-screen translation|उपशीर्षक
+#Science & Discovery
+atom=smallest unit,building block|परमाणु
+enzyme=biological catalyst,protein helper|इन्जाइम
+astronomy=study of space,star science|खगोल विज्ञान
+#Housing & Cities
+townhouse=terraced house,city home|टाउनहाउस
+rent=lease,let|भाडामा लिनु/दिनु
+cottage=small house,country home|कुटी, गाउँको घर
+#Business & Management
+entrepreneur=business founder,self-starter|उद्यमी
+contract=agreement,deal|सम्झौता
+brand=trademark,label|ब्रान्ड
+#Emotions & Reactions
+calm=peaceful,composed|शान्त
+sorrow=grief,sadness|शोक
+ecstatic=elated,jubilant|हर्षित
+#Verbs of Action
+strive=aim,work hard|प्रयास गर्नु
+inspect=look over,check|निरीक्षण गर्नु
+postpone=put off,defer|स्थगित गर्नु
+#Ideas & Concepts
+ethics=moral principles,values|नैतिकता
+logic=reasoning,rationale|तर्क
+ideology=belief system,doctrine|विचारधारा`;
+TH.forEach(t=>t.w.forEach(w=>{w.nw=0}));
+{let cur=null;GD3.split("\n").forEach(l=>{if(l[0]=="#"){cur=TH.find(t=>t.t==l.slice(1))}else{const[a,n]=l.split("|"),[w,sy]=a.split("=");cur.w.push({w,s:sy.split(","),n,nw:1})}})}
+const NQ=(k,a)=>{a.forEach(x=>{x.nw=1;IDX[hs(x)]=x});NEWSRC[k]=(NEWSRC[k]||[]).concat(a)};
+const nx=(C,k,a,lv)=>{C[k]=(C[k]||[]).concat(a);NQ(lv,a)};
+nx(C1,'px',[mc("Practice","The trains stopped running ___ the heavy snow.","Fill the gap.",["because of","so","for example","however"],0,T3,"'Because of' is followed by a noun: the heavy snow."),mc("Practice","Prices rose; ___, fewer customers came.","Fill the gap.",["as a result","because","such as","but"],0,T3,"'As a result,' introduces the result.")],0);
+nx(C2,'px',[m2("Practice","He is clever; ___, he is often lazy.","Fill the gap.",["however","therefore","for example","because"],0,"Wrong family","Clever vs lazy: contrast."),m2("Practice","Many animals, such as bats, hunt at night.","Which is the MAIN idea?",["Many animals hunt at night","Bats are small","Night is dark"],0,D_,"Bats are only an example.")],1);
+nx(C3,'px',[m3("Practice","","Closest in meaning to 'scarce':",["rare","plentiful","cheap"],0,W3,"Scarce = rare."),m3("Practice","The ___ of the project surprised everyone. (succeed)","Choose the noun.",["success","succeeded","successful"],0,"Word form","A noun is needed after 'The'.")],2);
+nx(C4,'px',[m4("Practice","The teacher praised the student.","Which is the PASSIVE version?",["The student was praised by the teacher.","The teacher was praised by the student.","The student praised the teacher."],0,PS,"The student receives the praise."),m4("Practice","Nearly 50% of workers cycle to work.","Which is closest?",["About half of workers cycle to work.","Very few workers cycle.","All workers cycle."],0,NM,"Nearly 50% is about half.")],3);
+nx(C5,'px',[m5("Practice","Tea is grown on many hills. Cool air and steady rain help the plants, and workers pick the youngest leaves by hand.","Best heading?",["How tea is grown","Cool air","Picking leaves"],0,NR,"The paragraph describes the whole process."),m5("Practice","Fast food is convenient and cheap. However, it often contains much salt and fat, so doctors advise eating it rarely.","Best heading?",["Fast food: convenience and health concerns","Salt and fat","Cheap meals"],0,NR,"Both sides appear.")],4);
+const PT4=["The city's first tram line opened in 1902 and carried 20,000 passengers a day.","Trams were replaced by buses in the 1960s because cars filled the roads and rails were costly to repair.","Today the council plans to bring trams back, arguing that they produce less pollution than buses.","Opponents say the project will cost too much and disrupt traffic for years."];
+nx(C6,'px',[sg("Practice",ip2(PT4,"a historical figure",0,"A: '20,000 passengers a day'.")),sg("Practice",ip2(PT4,"a reason for a past change",1,"B: 'because cars filled the roads'.")),sg("Practice",ip2(PT4,"an argument in favour of a plan",2,"C: 'less pollution than buses'.")),sg("Practice",ip2(PT4,"an objection to a plan",3,"D: 'cost too much and disrupt traffic'."))],5);
+const TSP="A new study followed 800 teenagers who played sport after school. Those who trained three times a week reported better sleep than those who played once a week. The researchers said the results do not show that sport alone improves sleep, because many of the teenagers also ate healthier food. Schools in two cities have already expanded after-school sport programmes.";
+const TFS=[tf("Practice",TSP,"The study included more than 500 teenagers.",0,"800 is more than 500: True."),tf("Practice",TSP,"Teenagers who trained more reported worse sleep.",1,"They reported better sleep: False."),tf("Practice",TSP,"The researchers believe sport alone improves sleep.",1,"They say the results do not show this: False."),tf("Practice",TSP,"All schools in the country expanded sport programmes.",1,"Only schools in two cities: False."),tf("Practice",TSP,"The teenagers were all fifteen years old.",2,"Ages are not mentioned: Not Given."),tf("Practice",TSP,"Some of the teenagers ate healthier food.",0,"'Many… also ate healthier food': True.")];
+TFS.forEach(x=>{x.ty=1;x.task='True/False/Not Given'});TFP.push(...TFS);NQ(7,TFS);
+const YMU="Many people say that classical music makes children cleverer. I am not convinced; the original studies were small and later experiments found little effect. Even so, I believe music lessons are valuable, because they teach discipline and give pleasure. Schools should therefore keep them, whatever the evidence says about intelligence.";
+const YNM=[yn("Practice",YMU,"The writer is convinced that classical music makes children cleverer.",1,"'I am not convinced' contradicts this."),yn("Practice",YMU,"The writer thinks music lessons should stay in schools.",0,"'Schools should therefore keep them'."),yn("Practice",YMU,"The writer believes music lessons teach discipline.",0,"'They teach discipline'."),yn("Practice",YMU,"The writer plays an instrument.",2,"Not stated.")];
+YNM.forEach(x=>{x.ty=1;x.task='Yes/No/Not Given'});YP.push(...YNM);NQ(8,YNM);
+const MPK="Anita wants the new park to include a playground because many families live nearby. Brian argues that the land should be kept as a wild meadow to protect insects. Chloe suggests a community garden where residents can grow vegetables. Daniel thinks the council should build a car park, since visitors drive from other districts.",MOK=["Anita","Brian","Chloe","Daniel"];
+const mfk=(q,c,why)=>({st:"Practice",ctx:MPK,q:"Who "+q+"?",o:MOK,c,fx:1,ty:1,task:'Matching Features',tg:MOK.map((_,k)=>k==c?"":"Mixed up the person"),why,n:"नाम खोज्नुहोस्, अनि त्यसले के भन्छ पढ्नुहोस्।"});
+const MF3=[mfk("wants a place for children to play",0,"Anita: a playground."),mfk("is worried about insects",1,"Brian: protect insects."),mfk("proposes growing food",2,"Chloe: a community garden."),mfk("points out that visitors come by car",3,"Daniel: 'visitors drive'."),mfk("wants the land left natural",1,"Brian: a wild meadow."),mfk("mentions families living nearby",0,"Anita: 'many families live nearby'.")];
+NQ(9,MF3);LV[9].gen=()=>[...shuf(MFQ.slice(0,4)),...shuf([...MFQ.slice(4),...MFQ2,...MF3]).slice(0,14)].map(x=>({...x}));
+const SAS=[saq(TSP,"How many teenagers took part in the study?","800"),saq(TSP,"How often did the better-sleep group train?","three times a week",["three times"]),saq(TSP,"How many cities have expanded sport programmes?","two",["2","two cities"])];
+SAS.forEach(x=>x.task='Short-answer Questions');SAQ.push(...SAS);NQ(15,SAS);
+const LBR="The old bridge was repaired in 1998 by a team of twelve engineers. It carries about 8,000 vehicles every day, and its steel cables are inspected twice a year.",SLM="NO MORE THAN TWO WORDS AND/OR A NUMBER";
+const SEN=[mcx("Practice",LBR,"The bridge was repaired by ___ engineers. ("+SLM+")",["twelve","1998","8,000","steel"],0,WT,"'A team of twelve engineers'."),mcx("Practice",LBR,"It carries about ___ vehicles every day. ("+SLM+")",["8,000","twelve","1998","twice"],0,WT,"'About 8,000 vehicles'."),mcx("Practice",LBR,"The cables are inspected ___ a year. ("+SLM+")",["twice","8,000","twelve","1998"],0,WT,"'Inspected twice a year'.")];
+SEN.forEach(x=>{x.task='Sentence Completion';x.limit=SLM;x.ty=1});SENT.push(...SEN);NQ(11,SEN);
+const LBT="Bats use sound to find their way. They send out high-pitched calls and listen for the echoes that bounce back from objects. This lets them catch insects in complete darkness. Some bats also use smell to find fruit.";
+const SUM2=[mcx("Practice",LBT,"Bats make high-pitched (1) ___ . (ONE WORD)",["calls","objects","smell","fruit"],0,WT,"'Send out high-pitched calls'."),mcx("Practice",LBT,"They listen for (2) ___ from objects. (ONE WORD)",["echoes","insects","darkness","sound"],0,"Trap word from the passage","'Sound' is in the passage but the answer is 'echoes'."),mcx("Practice",LBT,"This helps them catch (3) ___ in the dark. (ONE WORD)",["insects","fruit","objects","calls"],0,WT,"'Catch insects in complete darkness'.")];
+SUM2.forEach(x=>{x.task='Summary Completion';x.limit='ONE WORD';x.ty=1});SUMM.push(...SUM2);NQ(12,SUM2);
+const PBR="To make bread, flour is first mixed with water, salt and yeast to form a dough. The dough is then kneaded by hand for ten minutes and left to rise for an hour. Next, it is shaped into loaves and placed in a hot oven. After about thirty minutes, the loaves are removed and allowed to cool.";
+const FBR=fch(PBR,"Making bread",["Flour is mixed with water, salt and <b>(1)</b> ______ to form dough.","Dough is kneaded for ten <b>(2)</b> ______ .","Dough is left to rise for one <b>(3)</b> ______ .","Loaves are shaped and baked in a <b>(4)</b> ______ oven.","Loaves are taken out and left to <b>(5)</b> ______ ."]);
+const FLB=[["yeast"],["minutes"],["hour"],["hot"],["cool"]].map((a,i)=>fci(FBR,i+1,a[0],[],"ONE WORD ONLY"));
+NQ(16,FLB);LV[16].gen=()=>[...FLR,...FLC,...FLB].map(x=>({...x}));
+WRP.w2.push("Some people think that governments should spend money on public transport, while others believe building more roads is a better use of money. Discuss both views and give your own opinion.","Nowadays many people choose to live alone. Why is this happening, and is it a positive or negative development?");
+WRP.w1.push("The table below shows the average number of hours per week that teenagers in three countries spent on four activities in 2022.<table class=dt><tr><th>Country</th><th>Study</th><th>Sport</th><th>Social media</th><th>Reading</th></tr><tr><td>Norland</td><td>18</td><td>5</td><td>9</td><td>3</td></tr><tr><td>Orsova</td><td>25</td><td>3</td><td>6</td><td>5</td></tr><tr><td>Pelmar</td><td>14</td><td>7</td><td>12</td><td>2</td></tr></table>Summarise the information by selecting and reporting the main features, and make comparisons where relevant.");
 /* ---- LOGIN (simple, client-side) ---- */
 document.head.insertAdjacentHTML('beforeend','<style>input{font:inherit;width:100%;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:6px 0}</style>');
 /* EDIT USERS HERE: "username":"password" (username in lowercase). The first user inherits any progress already saved on this device. */
