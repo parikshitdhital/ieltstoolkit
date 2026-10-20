@@ -16,8 +16,9 @@ module.exports = async (req, res) => {
     return res.status(200).json({ env, redis: rs, loginUsers: (process.env.APP_USERS || "").split(",").filter(x => x.indexOf(":") > 0).length, recordedStudents: n });
   }
   try {
+    const month = /^\d{4}-\d{2}$/.test(String((req.query && req.query.month) || "")) ? req.query.month : kathmandu(Date.now()).slice(0, 7);
     const users = (await redis(["SMEMBERS", "users"])) || [], students = [];
-    for (const u of users.slice(0, 100)) { const raw = await redis(["GET", "rec:" + u]); if (!raw) continue; const r = JSON.parse(raw); const days = {}; Object.keys(r.days).sort().slice(-14).forEach(k => days[k] = r.days[k]); students.push({ u, seen: r.seen, snap: r.snap, days }); }
-    return res.status(200).json({ now: Date.now(), today: kathmandu(Date.now()), students });
+    for (const u of users.slice(0, 100)) { const raw = await redis(["GET", "rec:" + u]); if (!raw) continue; const r = JSON.parse(raw); const days = {}, cal = {}; Object.keys(r.days).sort().forEach(k => { const x = r.days[k]; cal[k] = [x.secs || 0, x.qs || 0, Math.max(x.opens || 0, (x.v || []).length)]; if (k.startsWith(month)) days[k] = x; }); students.push({ u, seen: r.seen, snap: r.snap, days, cal }); }
+    return res.status(200).json({ now: Date.now(), today: kathmandu(Date.now()), month, students });
   } catch (e) { return res.status(502).json({ error: "Store failed" }); }
 };
