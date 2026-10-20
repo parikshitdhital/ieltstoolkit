@@ -1297,16 +1297,16 @@ sequence=order,series|क्रम`;
 TH.forEach(t=>t.w.forEach(w=>{w.nw=0}));
 {let cur=null;GD2.split("\n").forEach(l=>{if(l[0]=="#"){cur=TH.find(t=>t.t==l.slice(1))}else{const[a,n]=l.split("|"),[w,sy]=a.split("=");cur.w.push({w,s:sy.split(","),n,nw:1})}})}
 /* ---- ACTIVITY TRACKING: offline-safe (counts and minutes only; queued in the phone, sent when online) ---- */
-let SID='',SST=0,TOK='',LASTI=Date.now(),QT=Date.now(),LSPLAY=0,SK=0,LF=Date.now();
+let SID='',SST=0,TOK='',LASTI=Date.now(),QT=Date.now(),LSPLAY=0,SK=0,LF=Date.now(),AM=[];
 const TR={opens:0,secs:0,qs:0,rq:0,correct:0,es:0,fast:0},QK='isg_q',tnow=()=>Date.now()+SK;
 ['pointerdown','keydown','touchstart','scroll','input'].forEach(e=>addEventListener(e,()=>{LASTI=Date.now()},{passive:true,capture:true}));
-setInterval(()=>{if(typeof U!=='undefined'&&U&&document.visibilityState=='visible'&&(Date.now()-LASTI<60000||LSPLAY)){TR.secs+=5;try{localStorage.setItem('isg_seen',Date.now())}catch(e){}}},5000);
+setInterval(()=>{if(typeof U!=='undefined'&&U&&document.visibilityState=='visible'&&(Date.now()-LASTI<60000||LSPLAY)){TR.secs+=5;{const mn=Math.floor((Date.now()+SK)/60000);if(AM[AM.length-1]!==mn)AM.push(mn)}try{localStorage.setItem('isg_seen',Date.now())}catch(e){}}},5000);
 const trkSnap=()=>({xp:S.xp,streak:S.streak,stars:Object.values(S.lv||{}).reduce((a,b)=>a+b,0),words:Object.values(S.sg||{}).filter(r=>r.b>=4).length,miss:Object.entries(S.miss||{}).sort((a,b)=>b[1]-a[1]).slice(0,5)});
 const qLoad=()=>{try{return JSON.parse(localStorage.getItem(QK)||'[]')}catch(e){return[]}},qSave=q=>{try{localStorage.setItem(QK,JSON.stringify(q.slice(-300)))}catch(e){}};
 function bank(){if(typeof U==='undefined'||!U)return;const d={...TR};if(!Object.values(d).some(v=>v))return;Object.keys(TR).forEach(k=>TR[k]=0);
-const now=tnow(),q=qLoad(),last=q[q.length-1];
-if(last&&!last.lock&&last.sid===SID&&last.u===U){Object.keys(d).forEach(k=>last.d[k]=(last.d[k]||0)+d[k]);last.to=now}
-else q.push({rid:Date.now().toString(36)+Math.random().toString(36).slice(2,6),u:U,sid:SID,st:SST,from:LF,to:now,d});
+const am=AM;AM=[];const now=tnow(),q=qLoad(),last=q[q.length-1];
+if(last&&!last.lock&&last.sid===SID&&last.u===U){Object.keys(d).forEach(k=>last.d[k]=(last.d[k]||0)+d[k]);last.to=now;last.am=(last.am||[]).concat(am)}
+else q.push({rid:Date.now().toString(36)+Math.random().toString(36).slice(2,6),u:U,sid:SID,st:SST,from:LF,to:now,d,am});
 LF=now;qSave(q)}
 async function flush(beacon){bank();if(!TOK||typeof U==='undefined'||!U)return;const q=qLoad(),mine=q.filter(r=>r.u===U);if(!mine.length)return;mine.forEach(r=>{r.lock=1});qSave(q);
 const body=JSON.stringify({token:TOK,recs:mine.slice(0,beacon?120:300).map(({u,lock,...r})=>r),snap:trkSnap()});
