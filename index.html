@@ -1476,6 +1476,136 @@ const FLB=[["yeast"],["minutes"],["hour"],["hot"],["cool"]].map((a,i)=>fci(FBR,i
 NQ(16,FLB);LV[16].gen=()=>[...FLR,...FLC,...FLB].map(x=>({...x}));
 WRP.w2.push("Some people think that governments should spend money on public transport, while others believe building more roads is a better use of money. Discuss both views and give your own opinion.","Nowadays many people choose to live alone. Why is this happening, and is it a positive or negative development?");
 WRP.w1.push("The table below shows the average number of hours per week that teenagers in three countries spent on four activities in 2022.<table class=dt><tr><th>Country</th><th>Study</th><th>Sport</th><th>Social media</th><th>Reading</th></tr><tr><td>Norland</td><td>18</td><td>5</td><td>9</td><td>3</td></tr><tr><td>Orsova</td><td>25</td><td>3</td><td>6</td><td>5</td></tr><tr><td>Pelmar</td><td>14</td><td>7</td><td>12</td><td>2</td></tr></table>Summarise the information by selecting and reporting the main features, and make comparisons where relevant.");
+/* ---- PACK 12: another batch of new questions in every category (flagged NEW) ---- */
+const GD4=`#Change & Trends
+tumble=drop sharply,slide|एक्कासी झर्नु
+stabilise=settle,even out|स्थिर हुनु
+revive=bring back,restore|पुनर्जीवित गर्नु
+#Cause & Effect
+prompt=bring on,give rise to|उत्प्रेरित गर्नु
+curb=restrain,limit|नियन्त्रण गर्नु
+enable=allow,make possible|सम्भव बनाउनु
+#Size & Amount
+minuscule=microscopic,wee|अति सानो
+handful=small number,couple|मुठ्ठीभर
+multitude=crowd,mass|जमात, धेरै संख्या
+#Research & Evidence
+hypothetical=theoretical,assumed|काल्पनिक
+replicate=repeat,duplicate|दोहोर्याउनु
+credible=believable,convincing|विश्वसनीय
+#Problems & Solutions
+hazard=peril,menace|जोखिम
+rectify=correct,put right|सच्याउनु
+persist=carry on,endure|कायम रहनु
+#People & Society
+volunteer=unpaid helper,offer to help|स्वयंसेवक
+charity=good cause,relief organisation|परोपकारी संस्था
+orphan=parentless child,child without parents|टुहुरो
+#Time & Frequency
+daily=every day,each day|दैनिक
+decade=ten years,ten-year period|दशक
+overnight=during the night,suddenly|रातभरि
+#Quality & Opinion
+mediocre=average,unremarkable|साधारण
+remarkable=extraordinary,striking|उल्लेखनीय
+impressive=admirable,awe-inspiring|प्रभावशाली
+#Environment & Nature
+rainforest=tropical forest,jungle|वर्षावन
+landfill=rubbish dump,waste site|फोहोर थुपार्ने ठाउँ
+climate=weather pattern,usual weather|जलवायु
+#Health & Medicine
+infection=disease,germ attack|संक्रमण
+antibiotic=bacteria killer,medicine for infection|एन्टिबायोटिक
+insomnia=sleeplessness,inability to sleep|अनिद्रा
+#Education & Learning
+campus=university grounds,college site|क्याम्पस
+dropout=quitter,early leaver|पढाइ छाड्ने
+diploma=award,course award|डिप्लोमा
+#Technology & Innovation
+wireless=cordless,without cables|तारविहीन
+browser=web program,internet viewer|ब्राउजर
+password=secret code,login key|पासवर्ड
+#Work & Economy
+unemployed=jobless,out of work|बेरोजगार
+tariff=import tax,customs duty|भन्सार शुल्क
+vacancy=job opening,empty post|रिक्त पद
+#Communication & Opinion
+whisper=murmur,speak softly|कानेखुसी गर्नु
+boast=brag,show off|घमण्ड गर्नु
+inquire=ask,enquire|सोधपुछ गर्नु
+#Movement & Travel
+itinerary=travel plan,schedule|यात्रा तालिका
+commuter=daily traveller,regular passenger|दैनिक यात्री
+border=frontier,boundary line|सीमा
+#Behaviour & Attitude
+impatient=restless,eager|अधैर्य
+fearless=brave,bold|निडर
+gentle=soft,tender|कोमल
+#Government & Law
+minister=government official,cabinet member|मन्त्री
+tribunal=court,panel of judges|न्यायाधिकरण
+regulation=rule,directive|नियमावली
+#Culture & Media
+sculpture=carved figure,statue|मूर्तिकला
+orchestra=symphony group,band of musicians|वाद्यवृन्द
+novelist=fiction writer,book author|उपन्यासकार
+#Science & Discovery
+gravity=force of attraction,pull towards earth|गुरुत्वाकर्षण
+molecule=group of atoms,tiny unit of matter|अणु
+microscope=magnifying instrument,tool for tiny things|सूक्ष्मदर्शक
+#Housing & Cities
+balcony=terrace,small platform|बारेस
+basement=cellar,underground floor|तहखाना
+attic=loft,top-floor space|माथिल्लो कोठा
+#Business & Management
+sponsor=backer,supporter|प्रायोजक
+merchandise=goods,products|सामान
+franchise=licensed outlet,business licence|फ्रेन्चाइज
+#Emotions & Reactions
+nervous=edgy,uneasy|आत्तिएको
+regretful=sorry,remorseful|पश्चात्ताप भएको
+hopeless=despairing,without hope|निराश
+#Verbs of Action
+shorten=cut short,abbreviate|छोटो पार्नु
+borrow=take on loan,use temporarily|सापटी लिनु
+invite=ask,summon|निम्तो दिनु
+#Ideas & Concepts
+priority=top concern,first consideration|प्राथमिकता
+ambiguity=vagueness,double meaning|अस्पष्टता
+contrast=difference,opposition|भिन्नता`;
+TH.forEach(t=>t.w.forEach(w=>{w.nw=0}));
+{let cur=null;GD4.split("\n").forEach(l=>{if(l[0]=="#"){cur=TH.find(t=>t.t==l.slice(1))}else{const[a,n]=l.split("|"),[w,sy]=a.split("=");cur.w.push({w,s:sy.split(","),n,nw:1})}})}
+nx(C1,'px',[mc("Practice","The match was postponed ___ the storm.","Fill the gap.",["due to","so","however","for instance"],0,T3,"'Due to' is followed by a noun: the storm."),mc("Practice","Salaries rose; ___, spending increased.","Fill the gap.",["as a result","because of","such as","although"],0,T3,"'As a result,' introduces the result.")],0);
+nx(C2,'px',[m2("Practice","The plan looked good; ___, it was too expensive.","Fill the gap.",["however","therefore","for example","because"],0,"Wrong family","Good vs expensive: contrast."),m2("Practice","Several fruits, including mangoes, grow well here.","Which word starts the EXAMPLE?",["Several fruits","including","grow well here"],1,K,"'Including' introduces the example.")],1);
+nx(C3,'px',[m3("Practice","","Closest in meaning to 'enormous':",["huge","tiny","brief"],0,W3,"Enormous = huge."),m3("Practice","The ___ of the old library took a year. (restore)","Choose the noun.",["restoration","restored","restoring"],0,"Word form","A noun is needed after 'The'.")],2);
+nx(C4,'px',[m4("Practice","The council banned cars in the centre.","Which is the PASSIVE version?",["Cars were banned in the centre by the council.","The council was banned by cars.","Cars banned the council."],0,PS,"The cars receive the action."),m4("Practice","Almost 25% of students walk to school.","Which is closest?",["About a quarter of students walk to school.","Most students walk to school.","Half of students walk to school."],0,NM,"25% is a quarter.")],3);
+nx(C5,'px',[m5("Practice","Many towns now offer free bicycles for visitors. Tourists can explore quietly, and the towns report less traffic, although some bikes are damaged or stolen.","Best heading?",["Free bicycles for visitors: benefits and problems","Stolen bikes","Quiet exploring"],0,NR,"Benefits and problems both appear."),m5("Practice","Honeybees travel long distances to find flowers. When a bee finds food, it dances to tell the others where to go, and the dance shows both direction and distance.","Best heading?",["How bees communicate the location of food","Honeybees' long journeys","Flowers"],0,NR,"The paragraph is about the dance as communication.")],4);
+const PRG=["Rooftop gardens have spread rapidly in dense cities since 2010, with one survey counting over 2,000 in a single metropolis.","They reduce summer heat inside buildings, because plants shade the roof and release moisture.","Maintenance is a common complaint: watering and weeding can cost more than owners expect.","City officials now offer small grants to owners who agree to grow plants for at least five years."];
+nx(C6,'px',[sg("Practice",ip2(PRG,"a figure showing rapid spread",0,"A: 'over 2,000 in a single metropolis'.")),sg("Practice",ip2(PRG,"an environmental benefit",1,"B: 'reduce summer heat'.")),sg("Practice",ip2(PRG,"a common complaint",2,"C: 'Maintenance is a common complaint'.")),sg("Practice",ip2(PRG,"a financial incentive",3,"D: 'small grants'."))],5);
+const TWS="In 2021, the town of Harbury introduced a charge of ten pence for every plastic bag. Within a year, bag use fell by about 70 percent, and the money raised was donated to local charities. Some shopkeepers say sales of paper bags have grown, but a survey of customers found that most now bring their own bags. The council is considering a similar charge for disposable cups.";
+const TFW2=[tf("Practice",TWS,"The charge applied to every plastic bag.",0,"'For every plastic bag': True."),tf("Practice",TWS,"Bag use fell by about half within a year.",1,"It fell by about 70 percent: False."),tf("Practice",TWS,"The shops kept the money raised.",1,"It was donated to local charities: False."),tf("Practice",TWS,"Most customers now bring their own bags.",0,"Stated in the survey result: True."),tf("Practice",TWS,"The council has already introduced a charge for cups.",1,"It is only 'considering' one: False."),tf("Practice",TWS,"Bag charges are popular in all neighbouring towns.",2,"Neighbouring towns are not mentioned: Not Given.")];
+TFW2.forEach(x=>{x.ty=1;x.task='True/False/Not Given'});TFP.push(...TFW2);NQ(7,TFW2);
+const YTS="Some critics say that students waste time on social media. I partly agree, since many of them check their phones during lessons. However, I would not ban phones completely, because they are also useful for research and for keeping in touch with family. A sensible compromise would be to allow phones in break times only.";
+const YNP=[yn("Practice",YTS,"The writer completely agrees that students waste time on social media.",1,"'I partly agree' is not complete agreement."),yn("Practice",YTS,"The writer wants phones banned entirely.",1,"'I would not ban phones completely'."),yn("Practice",YTS,"The writer suggests allowing phones during breaks.",0,"'Allow phones in break times only'."),yn("Practice",YTS,"The writer teaches at a secondary school.",2,"Not stated.")];
+YNP.forEach(x=>{x.ty=1;x.task='Yes/No/Not Given'});YP.push(...YNP);NQ(8,YNP);
+const MPL="Elena thinks the city should plant more trees along its main roads to reduce noise. Frank would rather spend the money on cycle lanes so that fewer people drive. Gina suggests giving free bus passes to students and older residents. Hugo believes the council should charge drivers to enter the centre.",MOL=["Elena","Frank","Gina","Hugo"];
+const mfl=(q,c,why)=>({st:"Practice",ctx:MPL,q:"Who "+q+"?",o:MOL,c,fx:1,ty:1,task:'Matching Features',tg:MOL.map((_,k)=>k==c?"":"Mixed up the person"),why,n:"नाम खोज्नुहोस्, अनि त्यसले के भन्छ पढ्नुहोस्।"});
+const MF4=[mfl("wants trees planted along roads",0,"Elena: more trees."),mfl("prefers building cycle lanes",1,"Frank: cycle lanes."),mfl("proposes free bus travel for some groups",2,"Gina: free bus passes."),mfl("supports charging drivers",3,"Hugo: charge drivers."),mfl("mentions noise",0,"Elena: 'reduce noise'."),mfl("wants fewer people to drive",1,"Frank: 'so that fewer people drive'.")];
+NQ(9,MF4);LV[9].gen=()=>[...shuf(MFQ.slice(0,4)),...shuf([...MFQ.slice(4),...MFQ2,...MF3,...MF4]).slice(0,14)].map(x=>({...x}));
+const SAH=[saq(TWS,"What did Harbury charge for each plastic bag?","ten pence"),saq(TWS,"By roughly what percentage did bag use fall?","70 percent",["70%","70 per cent"]),saq(TWS,"Where did the money raised go?","local charities",["to local charities","charities"])];
+SAH.forEach(x=>x.task='Short-answer Questions');SAQ.push(...SAH);NQ(15,SAH);
+const LTR="The museum opens at nine o'clock and closes at five. It attracts around 3,000 visitors each week, and entry is free on Sundays.";
+const SEM=[mcx("Practice",LTR,"The museum opens at ___ o'clock. ("+SLM+")",["nine","five","3,000","Sundays"],0,WT,"'Opens at nine o'clock'."),mcx("Practice",LTR,"About ___ visitors come each week. ("+SLM+")",["3,000","nine","five","Sundays"],0,WT,"'Around 3,000 visitors each week'."),mcx("Practice",LTR,"Entry is free on ___. ("+SLM+")",["Sundays","nine","five","3,000"],0,WT,"'Entry is free on Sundays'.")];
+SEM.forEach(x=>{x.task='Sentence Completion';x.limit=SLM;x.ty=1});SENT.push(...SEM);NQ(11,SEM);
+const LSL="Sleep has two main types. During light sleep the body relaxes and the heart slows. In deep sleep, the body repairs muscles and the brain stores memories. Adults need about eight hours, but teenagers often need more.";
+const SUS=[mcx("Practice",LSL,"During light sleep, the heart (1) ___ . (ONE WORD)",["slows","repairs","stores","needs"],0,WT,"'The heart slows'. A verb is needed."),mcx("Practice",LSL,"In deep sleep, the body repairs its (2) ___ . (ONE WORD)",["muscles","memories","hours","adults"],0,WT,"'Repairs muscles'."),mcx("Practice",LSL,"The brain stores (3) ___ during deep sleep. (ONE WORD)",["memories","muscles","hours","heart"],0,"Trap word from the passage","'Stores memories'; 'muscles' are repaired, not stored.")];
+SUS.forEach(x=>{x.task='Summary Completion';x.limit='ONE WORD';x.ty=1});SUMM.push(...SUS);NQ(12,SUS);
+const PCH="To make cheese, milk is first warmed gently in a large vat. A starter is then added so that the milk thickens. The thick milk is cut into small pieces called curds, which are drained and pressed into moulds. Finally, the cheese is stored in a cool room for several months.";
+const FCH=fch(PCH,"Making cheese",["Milk is warmed gently in a large <b>(1)</b> ______ .","A <b>(2)</b> ______ is added so the milk thickens.","The thick milk is cut into <b>(3)</b> ______ .","Curds are drained and pressed into <b>(4)</b> ______ .","Cheese is stored in a <b>(5)</b> ______ room."]);
+const FLH=[["vat"],["starter"],["curds"],["moulds"],["cool"]].map((a,i)=>fci(FCH,i+1,a[0],[],"ONE WORD ONLY"));
+NQ(16,FLH);LV[16].gen=()=>[...FLR,...FLC,...FLB,...FLH].map(x=>({...x}));
+WRP.w2.push("Some people prefer to work for a large company, while others prefer a small business. Discuss both views and give your own opinion.","More and more people are shopping online. Do the advantages of this trend outweigh the disadvantages?");
+WRP.w1.push("The table below shows the number of tourists (in thousands) who visited three islands in 2015 and 2023.<table class=dt><tr><th>Island</th><th>2015</th><th>2023</th></tr><tr><td>Aroha</td><td>120</td><td>310</td></tr><tr><td>Belmar</td><td>85</td><td>90</td></tr><tr><td>Corsa</td><td>200</td><td>150</td></tr></table>Summarise the information by selecting and reporting the main features, and make comparisons where relevant.");
 /* ---- LOGIN (simple, client-side) ---- */
 document.head.insertAdjacentHTML('beforeend','<style>input{font:inherit;width:100%;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:6px 0}</style>');
 /* EDIT USERS HERE: "username":"password" (username in lowercase). The first user inherits any progress already saved on this device. */
