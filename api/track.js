@@ -44,7 +44,7 @@ module.exports = async (req, res) => {
     }
     rec.done = rec.done.slice(-500);
     Object.keys(rec.days).sort().slice(0, -180).forEach(k => delete rec.days[k]);
-    if (b.snap) { const s = b.snap; rec.snap = { xp: n(s.xp, 1e7), streak: n(s.streak, 9999), stars: n(s.stars, 999), words: n(s.words, 9999), miss: (Array.isArray(s.miss) ? s.miss.slice(0, 5) : []).map(m => [String(m[0]).slice(0, 40), n(m[1], 99999)]) }; }
+    if (b.snap) { const s = b.snap; rec.snap = { xp: n(s.xp, 1e7), streak: n(s.streak, 9999), stars: n(s.stars, 999), words: n(s.words, 9999), cov: (Array.isArray(s.cov) ? s.cov.slice(0, 25) : []).map(c => [String(c[0]).slice(0, 32), n(c[1], 9999), n(c[2], 9999)]), miss: (Array.isArray(s.miss) ? s.miss.slice(0, 5) : []).map(m => [String(m[0]).slice(0, 40), n(m[1], 99999)]) }; }
     if (accepted) rec.seen = Math.min(now, rec.lastTo || now);
     await redis(["SET", key, JSON.stringify(rec)]); if (fresh) await redis(["SADD", "users", u]);
     return res.status(200).json({ ok: true, accepted, now });
