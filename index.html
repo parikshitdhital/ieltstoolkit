@@ -1148,7 +1148,7 @@ const NEWSRC={0:C1.px.slice(-2),1:C2.px.slice(-2),2:C3.px.slice(-2),3:C4.px.slic
 Object.values(NEWSRC).flat().forEach(x=>x.nw=1);
 TH.slice(16).forEach(t=>t.w.forEach(w=>w.nw=1));
 const isNew=it=>!!it.nw&&!(it.w?(S.sg&&S.sg[it.w]):(S.seen&&S.seen[hs(it)])),newCount=k=>(NEWSRC[k]||[]).filter(isNew).length,newW=t=>t.w.filter(w=>w.nw&&!(S.sg&&S.sg[w.w])).length,gymNew=()=>TH.reduce((n,t)=>n+newW(t),0);
-const poolN=l=>{const a=pool(l);return[...a.filter(isNew),...a.filter(x=>!isNew(x))]};
+const poolN=l=>{const a=pool(l),r=[...a.filter(isNew),...a.filter(x=>!isNew(x))];return l.cap?r.slice(0,l.cap):r};
 /* ---- PACK 10: 5 more words in every Synonym Gym category (flagged NEW) ---- */
 const GD2=`#Change & Trends
 climb=ascend,go up|चढ्नु
@@ -1607,9 +1607,140 @@ NQ(16,FLH);LV[16].gen=()=>[...FLR,...FLC,...FLB,...FLH].map(x=>({...x}));
 WRP.w2.push("Some people prefer to work for a large company, while others prefer a small business. Discuss both views and give your own opinion.","More and more people are shopping online. Do the advantages of this trend outweigh the disadvantages?");
 WRP.w1.push("The table below shows the number of tourists (in thousands) who visited three islands in 2015 and 2023.<table class=dt><tr><th>Island</th><th>2015</th><th>2023</th></tr><tr><td>Aroha</td><td>120</td><td>310</td></tr><tr><td>Belmar</td><td>85</td><td>90</td></tr><tr><td>Corsa</td><td>200</td><td>150</td></tr></table>Summarise the information by selecting and reporting the main features, and make comparisons where relevant.");
 /* ---- COVERAGE: how many different questions of each tool have been answered ---- */
-const ALLQ=()=>{const CC=C=>[...C.w,...C.p,...(C.px||[]),...C.m,...(C.mx||[]),...C.b];return{0:CC(C1),1:CC(C2),2:CC(C3),3:CC(C4),4:CC(C5),5:CC(C6),7:[...TFW,...TFP],8:[...YW,...YP],9:[...MFQ,...MFQ2,...MF3,...MF4],10:FULL,11:SENT,12:SUMM,13:FULL2,14:FULL3,15:SAQ,16:[...FLR,...FLC,...FLB,...FLH]}};
+const ALLQ=()=>{const CC=C=>[...C.w,...C.p,...(C.px||[]),...C.m,...(C.mx||[]),...C.b];return{0:CC(C1),1:CC(C2),2:CC(C3),3:CC(C4),4:CC(C5),5:CC(C6),7:[...TFW,...TFP],8:[...YW,...YP],9:[...MFQ,...MFQ2,...MF3,...MF4,...MF5],10:FULL,11:SENT,12:SUMM,13:FULL2,14:FULL3,15:SAQ,16:[...FLR,...FLC,...FLB,...FLH,...FLI]}};
 const cov=k=>{const a=ALLQ()[k];if(!a)return null;const sq=S.sq||{};return[a.filter(x=>sq[hs(x)]).length,a.length]};
 const gymTried=()=>TH.reduce((n,t)=>n+t.w.filter(x=>(S.sg||{})[x.w]).length,0);
+/* ---- PACK 13: another batch of new questions in every category (flagged NEW) ---- */
+const GD5=`#Change & Trends
+boom=flourish,thrive|उन्नति हुनु
+stagnate=stand still,make no progress|ठप्प हुनु
+slacken=ease off,weaken|ढिलो हुनु
+#Cause & Effect
+precipitate=hasten,speed along|चाँडो गराउनु
+engender=generate,breed|जन्माउनु
+aggravate=worsen,make worse|बिगार्नु
+#Size & Amount
+abundance=plenty,profusion|प्रशस्तता
+sparse=thin,scattered|छरिएको, कम
+bulky=cumbersome,unwieldy|ठूलो र अप्ठ्यारो
+#Research & Evidence
+empirical=observed,experiment-based|प्रयोगमा आधारित
+inference=conclusion,reading between the lines|अनुमान
+rigorous=thorough,strict|कठोर, गहन
+#Problems & Solutions
+conflict=clash,dispute|द्वन्द्व
+deteriorate=worsen,go downhill|बिग्रनु
+breakdown=failure,collapse|भत्किनु, खराबी
+#People & Society
+tolerance=acceptance,open-mindedness|सहनशीलता
+neighbour=person next door,nearby resident|छिमेकी
+adolescent=teenager,young person|किशोर
+#Time & Frequency
+forthcoming=upcoming,approaching|आगामी
+preceding=previous,foregoing|अघिल्लो
+momentary=fleeting,passing|क्षणिक
+#Quality & Opinion
+superior=better,higher quality|उच्च
+inferior=lower,poorer|निम्न
+durable=long-lasting,hard-wearing|टिकाउ
+#Environment & Nature
+canopy=treetops,forest roof|वनको माथिल्लो तह
+predator=hunter,animal that hunts|सिकारी जनावर
+tide=sea movement,rise and fall of the sea|ज्वारभाटा
+#Health & Medicine
+vitamin=nutrient,dietary supplement|भिटामिन
+surgeon=operating doctor,medical operator|शल्य चिकित्सक
+pandemic=worldwide spread,global disease|विश्वव्यापी महामारी
+#Education & Learning
+mentor=advisor,guide|मार्गदर्शक
+scholar=academic,learned person|विद्वान
+lecturer=university teacher,academic speaker|प्राध्यापक
+#Technology & Innovation
+drone=unmanned aircraft,flying robot|ड्रोन
+sensor=detector,monitoring device|सेन्सर
+satellite=orbiting craft,space relay|उपग्रह
+#Work & Economy
+colleague=co-worker,workmate|सहकर्मी
+overtime=extra hours,additional work time|ओभरटाइम
+pension=retirement income,old-age payment|पेन्सन
+#Communication & Opinion
+plead=beg,appeal|बिन्ती गर्नु
+greet=welcome,say hello|अभिवादन गर्नु
+gossip=chatter,idle talk|गफ गर्नु
+#Movement & Travel
+cruise=sea trip,sail|समुद्री यात्रा
+hike=long walk,ramble|पैदल यात्रा
+terminal=station,departure hall|टर्मिनल
+#Behaviour & Attitude
+punctual=on time,prompt|समयनिष्ठ
+cooperative=helpful,willing to work together|सहयोगी
+rebellious=defiant,disobedient|विद्रोही
+#Government & Law
+veto=reject,block|निषेधाधिकार
+campaign=drive,political effort|अभियान
+citizenship=nationality,legal membership|नागरिकता
+#Culture & Media
+poet=verse writer,rhymer|कवि
+portrait=likeness,painted face|चित्र, व्यक्तिचित्र
+cinema=film theatre,movie house|चलचित्र हल
+#Science & Discovery
+neuron=nerve cell,brain cell|स्नायु कोश
+bacteria=microbes,single-cell organisms|ब्याक्टेरिया
+galaxy=star system,collection of stars|आकाशगंगा
+#Housing & Cities
+landmark=notable building,famous site|प्रसिद्ध स्थल
+junction=crossroads,road meeting point|चौबाटो
+pavement=sidewalk,footpath|पदमार्ग
+#Business & Management
+shipment=delivery,consignment|ढुवानी सामान
+warehouse=storehouse,depot|गोदाम
+logistics=supply organisation,transport planning|आपूर्ति व्यवस्थापन
+#Emotions & Reactions
+grumpy=bad-tempered,crabby|चिडचिडा
+overwhelmed=swamped,overcome|थिचिएको
+sympathetic=compassionate,understanding|सहानुभूतिपूर्ण
+#Verbs of Action
+accumulate=build up,pile up|जम्मा गर्नु
+distribute=hand out,share out|वितरण गर्नु
+improvise=make do,ad-lib|तत्काल बनाउनु
+#Ideas & Concepts
+paradox=contradiction,puzzle|विरोधाभास
+stereotype=fixed image,oversimplified idea|रूढिवादी धारणा
+assumption=belief taken for granted,presupposition|मान्यता`;
+TH.forEach(t=>t.w.forEach(w=>{w.nw=0}));
+{let cur=null;GD5.split("\n").forEach(l=>{if(l[0]=="#"){cur=TH.find(t=>t.t==l.slice(1))}else{const[a,n]=l.split("|"),[w,sy]=a.split("=");cur.w.push({w,s:sy.split(","),n,nw:1})}})}
+nx(C1,'px',[mc("Practice","The flight was cancelled ___ the fog.","Fill the gap.",["because of","so","however","such as"],0,T3,"'Because of' is followed by a noun: the fog."),mc("Practice","Many farmers left their villages; ___, the fields were empty.","Fill the gap.",["as a result","because","for example","although"],0,T3,"'As a result,' introduces the result.")],0);
+nx(C2,'px',[m2("Practice","The film was short; ___, it was moving.","Fill the gap.",["nevertheless","therefore","for example","because"],0,"Wrong family","Short vs moving: contrast."),m2("Practice","Large cities, such as Tokyo and Delhi, face housing shortages.","Which is the MAIN idea?",["Large cities face housing shortages","Tokyo is large","Delhi is old"],0,D_,"Tokyo and Delhi are examples.")],1);
+nx(C3,'px',[m3("Practice","","Closest in meaning to 'abandon':",["leave","keep","build"],0,W3,"Abandon = leave."),m3("Practice","The ___ of the new rules surprised staff. (introduce)","Choose the noun.",["introduction","introduced","introducing"],0,"Word form","A noun is needed after 'The'.")],2);
+nx(C4,'px',[m4("Practice","The government approved the budget.","Which is the PASSIVE version?",["The budget was approved by the government.","The government was approved by the budget.","The budget approved the government."],0,PS,"The budget receives the action."),m4("Practice","About 90% of pupils passed the test.","Which is closest?",["Almost all pupils passed the test.","Few pupils passed the test.","Half the pupils passed the test."],0,NM,"90% means almost all.")],3);
+nx(C5,'px',[m5("Practice","Many cities are planting more trees on their streets. Trees give shade in summer, clean the air and make neighbourhoods more attractive, although their roots can damage pavements.","Best heading?",["Street trees: benefits and a drawback","Tree roots","Shade in summer"],0,NR,"Benefits and a drawback both appear."),m5("Practice","Electric buses are being tested in several countries. They are quieter and cleaner than diesel buses, but they cost more to buy and need many charging stations.","Best heading?",["Electric buses: advantages and costs","Charging stations","Quiet buses"],0,NR,"Advantages and costs both appear.")],4);
+const PGS=["The world's first public aquarium opened in London in 1853 and attracted thousands of visitors in its first year.","Early aquariums were popular because few people had ever seen sea creatures alive.","Today, some critics argue that keeping large animals in tanks is cruel and should stop.","Many aquariums respond by funding rescue programmes and building larger, more natural habitats."];
+nx(C6,'px',[sg("Practice",ip2(PGS,"a date",0,"A: 'opened in London in 1853'.")),sg("Practice",ip2(PGS,"a reason for early popularity",1,"B: 'few people had ever seen sea creatures alive'.")),sg("Practice",ip2(PGS,"an ethical objection",2,"C: 'cruel and should stop'.")),sg("Practice",ip2(PGS,"a response to criticism",3,"D: 'respond by funding rescue programmes'."))],5);
+const TCY="Cycling to work has become more common in the city of Linden. A recent count found that 12 percent of commuters now cycle, compared with 4 percent a decade ago. The council attributes the rise to new protected lanes, though it admits that it has not studied other possible causes. Cyclists still report that parking for bikes is hard to find.";
+const TFY=[tf("Practice",TCY,"The share of cycling commuters has increased.",0,"From 4 to 12 percent: True."),tf("Practice",TCY,"Four percent of commuters cycle today.",1,"Four percent was a decade ago; today it is 12: False."),tf("Practice",TCY,"The council has proved that protected lanes caused the rise.",1,"It admits it has not studied other causes: False."),tf("Practice",TCY,"Cyclists find bike parking easy.",1,"It is 'hard to find': False."),tf("Practice",TCY,"Most commuters in Linden cycle to work.",1,"Only 12 percent do: False."),tf("Practice",TCY,"Linden has more cyclists than any other city.",2,"No comparison with other cities: Not Given.")];
+TFY.forEach(x=>{x.ty=1;x.task='True/False/Not Given'});TFP.push(...TFY);NQ(7,TFY);
+const YPG="Some people believe that homework should be abolished. I disagree, although I accept that too much of it is harmful. Short, well-planned tasks help pupils practise what they have learned and develop good study habits. Teachers should therefore set less homework, not none, and make sure it is meaningful.";
+const YNH=[yn("Practice",YPG,"The writer wants homework abolished.",1,"'I disagree' contradicts this."),yn("Practice",YPG,"The writer admits that too much homework can be harmful.",0,"'I accept that too much of it is harmful'."),yn("Practice",YPG,"The writer thinks teachers should set meaningful tasks.",0,"'Make sure it is meaningful'."),yn("Practice",YPG,"The writer is a teacher.",2,"Not stated.")];
+YNH.forEach(x=>{x.ty=1;x.task='Yes/No/Not Given'});YP.push(...YNH);NQ(8,YNH);
+const MPS="Ines recommends studying in the morning, when she feels most alert. Jonas prefers short sessions of twenty minutes with regular breaks. Kamal says that studying with a friend keeps him motivated. Lia advises writing summaries instead of rereading notes.",MOS=["Ines","Jonas","Kamal","Lia"];
+const mfs=(q,c,why)=>({st:"Practice",ctx:MPS,q:"Who "+q+"?",o:MOS,c,fx:1,ty:1,task:'Matching Features',tg:MOS.map((_,k)=>k==c?"":"Mixed up the person"),why,n:"नाम खोज्नुहोस्, अनि त्यसले के भन्छ पढ्नुहोस्।"});
+const MF5=[mfs("prefers studying early in the day",0,"Ines: the morning."),mfs("likes short sessions with breaks",1,"Jonas: twenty minutes, regular breaks."),mfs("finds a study partner helpful",2,"Kamal: studying with a friend."),mfs("suggests writing summaries",3,"Lia: write summaries."),mfs("mentions feeling alert",0,"Ines: 'most alert'."),mfs("thinks rereading notes is less useful",3,"Lia: summaries 'instead of rereading'.")];
+NQ(9,MF5);LV[9].gen=()=>[...shuf(MFQ.slice(0,4)),...shuf([...MFQ.slice(4),...MFQ2,...MF3,...MF4,...MF5]).slice(0,14)].map(x=>({...x}));
+const SAY=[saq(TCY,"What percentage of commuters now cycle?","12 percent",["12%","12 per cent","twelve percent"]),saq(TCY,"What percentage cycled a decade ago?","4 percent",["4%","4 per cent","four percent"]),saq(TCY,"What does the council say caused the rise?","new protected lanes",["protected lanes"])];
+SAY.forEach(x=>x.task='Short-answer Questions');SAQ.push(...SAY);NQ(15,SAY);
+const LGD="The garden opened in 1962 and now has over 400 species of plants. A café near the entrance serves visitors from ten in the morning, and the garden closes at dusk.";
+const SEG=[mcx("Practice",LGD,"The garden opened in ___. ("+SLM+")",["1962","400","ten","dusk"],0,WT,"'Opened in 1962'."),mcx("Practice",LGD,"It has over ___ species of plants. ("+SLM+")",["400","1962","ten","dusk"],0,WT,"'Over 400 species'."),mcx("Practice",LGD,"The café opens at ___ in the morning. ("+SLM+")",["ten","400","1962","dusk"],0,WT,"'From ten in the morning'.")];
+SEG.forEach(x=>{x.task='Sentence Completion';x.limit=SLM;x.ty=1});SENT.push(...SEG);NQ(11,SEG);
+const LVO="Volcanoes form where hot melted rock, called magma, rises through cracks in the Earth's crust. When pressure builds up, the magma escapes as lava, ash and gas. Over time, layers of cooled lava build a mountain. Volcanic soil is rich in minerals, so farmers often grow crops near volcanoes.";
+const SUV=[mcx("Practice",LVO,"Hot melted rock is called (1) ___ . (ONE WORD)",["magma","lava","crust","ash"],0,"Trap word from the passage","'Hot melted rock, called magma'. Lava is what escapes."),mcx("Practice",LVO,"Layers of cooled (2) ___ build a mountain. (ONE WORD)",["lava","magma","gas","soil"],0,WT,"'Layers of cooled lava'."),mcx("Practice",LVO,"Volcanic soil is rich in (3) ___ . (ONE WORD)",["minerals","crops","pressure","cracks"],0,WT,"'Rich in minerals'.")];
+SUV.forEach(x=>{x.task='Summary Completion';x.limit='ONE WORD';x.ty=1});SUMM.push(...SUV);NQ(12,SUV);
+const PGL="To recycle glass, used bottles are first collected and sorted by colour. They are then crushed into small pieces called cullet, which are washed to remove labels. Next, the cullet is melted in a furnace at very high temperatures. Finally, the liquid glass is shaped into new bottles in moulds.";
+const FGL=fch(PGL,"Recycling glass",["Used bottles are collected and sorted by <b>(1)</b> ______ .","Bottles are crushed into small pieces called <b>(2)</b> ______ .","The pieces are washed to remove <b>(3)</b> ______ .","The cullet is melted in a <b>(4)</b> ______ .","Liquid glass is shaped into new bottles in <b>(5)</b> ______ ."]);
+const FLI=[["colour"],["cullet"],["labels"],["furnace"],["moulds"]].map((a,i)=>fci(FGL,i+1,a[0],[],"ONE WORD ONLY"));
+NQ(16,FLI);LV[16].gen=()=>[...FLR,...FLC,...FLB,...FLH,...FLI].map(x=>({...x}));
+WRP.w2.push("Some people think that children should learn a foreign language from primary school. Others believe it is better to start later. Discuss both views and give your own opinion.","In some countries, young people are leaving rural areas to live in cities. What problems does this cause, and what can be done?");
+WRP.w1.push("The table below shows the percentage of people using four types of transport to travel to work in two cities in 2010 and 2020.<table class=dt><tr><th>Transport</th><th>City X 2010</th><th>City X 2020</th><th>City Y 2010</th><th>City Y 2020</th></tr><tr><td>Car</td><td>62</td><td>48</td><td>40</td><td>35</td></tr><tr><td>Bus</td><td>20</td><td>24</td><td>30</td><td>28</td></tr><tr><td>Bicycle</td><td>5</td><td>14</td><td>10</td><td>15</td></tr><tr><td>Train</td><td>13</td><td>14</td><td>20</td><td>22</td></tr></table>Summarise the information by selecting and reporting the main features, and make comparisons where relevant.");
+LV[15].cap=20;LV[16].cap=20;   /* long tools: 20 questions per round, new ones first */
 /* ---- LOGIN (simple, client-side) ---- */
 document.head.insertAdjacentHTML('beforeend','<style>input{font:inherit;width:100%;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:6px 0}</style>');
 /* EDIT USERS HERE: "username":"password" (username in lowercase). The first user inherits any progress already saved on this device. */
